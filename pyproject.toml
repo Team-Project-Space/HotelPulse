@@ -14,6 +14,31 @@ dependencies = [
     "anthropic>=0.30.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+hotelpulse = "hotelpulse.app.streamlit_app:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hotelpulse"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/hotelpulse",
+    "tests",
+    "eval",
+    "PRD.md",
+    "agent.md",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

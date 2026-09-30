@@ -1,4 +1,13 @@
 {
-  "python.defaultInterpreterPath": "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
-  "python.analysis.extraPaths": ["./src"]
+  "python.defaultInterpreterPath": "C:\\Users\\Asus\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "python.analysis.extraPaths": ["./src"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": ["tests"],
+  "python.terminal.activateEnvironment": false,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/*.db": true
+  }
 }
