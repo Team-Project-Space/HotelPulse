@@ -1,0 +1,1 @@
+"""HotelPulse app package."""
