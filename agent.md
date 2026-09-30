@@ -3,6 +3,13 @@
 > **Audience:** Next AI Agent working on HotelPulse.  
 > Read this document first before writing code or running commands.
 
+> **Status at a glance**
+> - Phase 1 of 7 is **5 of 6 boxes complete**. 94 offline tests pass.
+> - The dashboard **runs but displays mock data** — it does not fetch anything yet.
+> - **Your next task is Phase 2 (the LLM tagging engine)**, preceded by closing Phase 1 box 6.
+> - **Both remaining steps need an API key in `.env`.** Start at §4 Step 0.
+> - Run with `py`, never `.venv` (WDAC blocks it). See §3 and Gotcha 3.
+
 ---
 
 ## 1. Project Overview & Goals
@@ -30,8 +37,8 @@
 - [`pyproject.toml`](./pyproject.toml): Dependencies declared. **Fixed:** added `[tool.hatch.build.targets.wheel] packages = ["src/hotelpulse"]` (without it the editable install ships nothing — src-layout + hatchling), `[tool.pytest.ini_options] pythonpath = ["src"]`, and `pytest` under `[project.optional-dependencies] dev`.
 - [`requirements.txt`](./requirements.txt): **New.** Pinned from the verified working install.
 - [`.env.example`](./.env.example): **New.** All keys/settings from PRD §15, plus the credit guard-rail vars.
-- [`Makefile`](./Makefile): **New.** `install`, `install-dev`, `run`, `test`, `eval`, `db-init`, `fmt-check`, `clean`. Uses `py` per Gotcha 3.
-- [`data/.gitkeep`](./data/.gitkeep), [`tests/fixtures/.gitkeep`](./tests/fixtures/.gitkeep): **New.**
+- [`Makefile`](./Makefile): **New.** `install`, `install-dev`, `run`, `test`, `eval`, `db-init`, `fmt-check`, `clean`. Uses `py` per Gotcha 3, so it is correct — but **`make` is not installed on this machine**, so use the `py -m` commands in §3 instead.
+- [`data/.gitkeep`](./data/.gitkeep), [`tests/fixtures/README.md`](./tests/fixtures/README.md): **New.** The latter documents how to capture the real SerpApi fixtures for 2–3 credits.
 - [`README.md`](./README.md): Pitch paragraph only. PRD §18 still owes setup, architecture, accuracy, caching, limitations, disclosures.
 - [`.vscode/settings.json`](./.vscode/settings.json): **Fixed.** Pointed at the non-existent Python 3.13; now Python 3.12.4 with pytest enabled.
 - Environment verified: `py -m streamlit run src/hotelpulse/app/streamlit_app.py` returns HTTP 200 on `/_stcore/health`. `import hotelpulse` works with no `sys.path` hack.
@@ -70,7 +77,7 @@ The UI is styled to match all three design mockups and runs, but **nothing is wi
    |---|---|
    | `sort_by=newest` | **`sort_by=newestFirst`** (others: `qualityScore`, `ratingHigh`, `ratingLow`) |
    | implies 10–20 reviews/page | **First page returns 8.** `num` is *rejected* on page 1 when no `next_page_token`/`topic_id`/`query` is set. So `MAX_REVIEWS_OWN=100` costs ~13 credits. |
-   | count credits from the cache table | Search responses contain **no** `credits`/`credits_left` field. Use `client.account()` (free, does not consume quota) → `this_month_usage`, `total_searches_left`. Counting `api_cache` rows is still the cheapest local proxy. |
+   | count credits from the cache table | Search responses contain **no** `credits`/`credits_left` field. Use `client.account()` (free, does not consume quota) → `this_month_usage`, `total_searches_left`. **Do not count `api_cache` rows** — see Gotcha 7; use the `api_calls` ledger. |
 
    Other confirmed details:
    - Engines: `google_maps`, `google_maps_reviews`, `tripadvisor`, `tripadvisor_reviews`.
@@ -90,45 +97,90 @@ The UI is styled to match all three design mockups and runs, but **nothing is wi
 
 ## 3. How to Run and Test the App
 
-From the project root (see Gotcha 3 — always `py`, never `.venv`):
-```powershell
-py -m streamlit run src/hotelpulse/app/streamlit_app.py
-```
-App will be accessible at: `http://localhost:8501`.
+**Always run from the project root (`E:\HotelPulse`), and always with `py` — never `.venv` (Gotcha 3).**
 
-Tests (offline, no API keys needed):
+### Test
 ```powershell
 py -m pytest
 ```
+Expected right now: **94 passed, 2 skipped** in ~6 seconds. The 2 skips are the real-SerpApi-fixture tests, which skip until `tests/fixtures/maps_search.json` and `maps_reviews.json` are captured. Runs fully offline — no API keys, no network.
 
-Or via `make` if it is installed (`make run`, `make test`, `make db-init`, `make eval`).
+Useful variants:
+```powershell
+py -m pytest tests/test_cache.py -v        # one file, verbose
+py -m pytest -k "budget or credit"         # filter by test name
+py -m pytest --collect-only                 # list tests without running them
+```
 
-Health check without a browser: `py -m streamlit run ... --server.headless true --server.port 8511`, then `Invoke-WebRequest http://localhost:8511/_stcore/health` should return `ok`.
+### Run the dashboard
+```powershell
+py -m streamlit run src/hotelpulse/app/streamlit_app.py
+```
+Then open `http://localhost:8501`.
+
+**Expect mock data.** Every number on screen is a hardcoded literal (see §2.B.3). `Analyze my hotel →` only flips `view_mode`; it does not fetch anything. That is fixed in Phase 4, not now.
+
+### Verify it booted without a browser
+```powershell
+py -m streamlit run src/hotelpulse/app/streamlit_app.py --server.headless true --server.port 8511
+Invoke-WebRequest http://localhost:8511/_stcore/health    # returns "ok"
+```
+Stop with `Stop-Process -Id <pid> -Force`. Port 8501 is the default; 8511 avoids colliding with an already-running instance.
+
+### About the Makefile
+[`Makefile`](./Makefile) exists because PRD §15 requires those targets, and it internally uses `py`, so it is correct — but **`make` is NOT installed on this machine.** `make test` and `make run` will fail with "command not found". Use the `py -m` commands above. If you ever install `make` (`winget install GnuWin32.Make` or `choco install make`), the `Makefile` works as written.
+
+### First-time setup (already done on this box)
+```powershell
+py -m pip install -r requirements.txt
+py -m pip install -e . --no-deps --no-build-isolation
+```
+Do not skip these — without them `import hotelpulse` fails and Streamlit cannot start. Remember Gotcha 4: a fresh `pip install` takes >10 minutes because downloads run at ~30 kB/s. It is slow, not hung.
 
 ---
 
 ## 4. Next Steps & Instructions for the Next Agent
 
-The UI is ready. Next is implementing the backend according to Section 16 of [`PRD.md`](./PRD.md).
+**Read this section first.** State of play as of the last commit:
 
-**Progress against PRD §16:** Phase 1 boxes 1–5 are done and covered by 94 offline tests. **Box 6 (one real hotel fetched and cached) is the only Phase 1 item left**, and it needs `SERPAPI_API_KEY` in `.env`. Then start Phase 2.
+| Phase | PRD §16 boxes | Status |
+|---|---|---|
+| 0 (env) | 1 | Done |
+| 1 fetch and cache | 2–6 | **5 of 6 done. Box 6 is the only thing left.** |
+| 2 tagging | all | Not started — **this is your next task** |
+| 3–7 | all | Not started |
 
-### **Phase 1: Database & SerpApi Caching — 5 of 6 done**
-1. **Models & config — DONE.** [`src/hotelpulse/models.py`](./src/hotelpulse/models.py), [`src/hotelpulse/config.py`](./src/hotelpulse/config.py). PRD §9 verbatim plus additive view models. Note: SerpApi sends ratings as floats and review totals as comma strings under the key `reviews`, so the models coerce on input and junk becomes `None` instead of raising.
-2. **Database layer — DONE.** [`db/schema.sql`](./src/hotelpulse/db/schema.sql), [`db/connection.py`](./src/hotelpulse/db/connection.py), [`db/repo.py`](./src/hotelpulse/db/repo.py).
-3. **SerpApi layer — DONE.** [`serp/client.py`](./src/hotelpulse/serp/client.py), [`serp/maps.py`](./src/hotelpulse/serp/maps.py), [`serp/reviews_maps.py`](./src/hotelpulse/serp/reviews_maps.py), [`serp/normalize.py`](./src/hotelpulse/serp/normalize.py).
-4. **Tests — DONE.** 94 passing offline: [`tests/conftest.py`](./tests/conftest.py), [`tests/test_normalize.py`](./tests/test_normalize.py), [`tests/test_cache.py`](./tests/test_cache.py).
-5. **Manual check — NOT DONE.** Needs an API key. See Gotcha 7.
-6. **Phase 2: LLM Tagging Engine (next)**
-   - `src/hotelpulse/analysis/config.py` — re-export `RECENCY_HALF_LIFE_DAYS`, `MIN_MENTIONS`; keep `PROMPT_VERSION` here so bumping it re-tags.
-   - `src/hotelpulse/analysis/prompts.py` — system prompt from PRD §12 verbatim.
-   - `src/hotelpulse/analysis/tagger.py` — batch 12 reviews into Claude Haiku, validate with Pydantic, drop mentions where `quote not in review.text` (try a whitespace-normalized match first), log the drop rate. Use `repo.untagged_reviews()` so already-tagged reviews are never resent.
-   - `eval/labeled_reviews.jsonl` (30–50 reviews, include Hinglish) and `eval/run_eval.py` for topic F1 + sentiment accuracy.
+94 offline tests pass. The database, SerpApi cache, Maps fetchers and normalization are built and tested. The dashboard still runs on mock data.
 
-### **Phase 3 & 4: Scoring, Ranking & Connecting to UI**
-- `src/hotelpulse/analysis/scoring.py` (Recency decay $w = 0.5^{(\text{age} / 180)}$, 1–5 topic score, `MIN_MENTIONS=3` guard).
-- `src/hotelpulse/analysis/ranking.py` (Fix-first priority $\sum \text{severity} \times w$, top 3 strengths).
-- `src/hotelpulse/services/pipeline.py` (Connect the pipeline to `streamlit_app.py` so real data replaces mock data. See the list of hardcoded values in §2.B.3.)
+### Your next step, in order
+
+**Step 0 — Get an API key.** Everything below is blocked without it:
+```powershell
+copy .env.example .env
+```
+Add `SERPAPI_API_KEY=<key>` (finishes Phase 1 box 6) and `ANTHROPIC_API_KEY=<key>` (needed for Phase 2). `.env` is gitignored — never commit it. If you genuinely have no key, you can still build Phase 2's tagger against mocked LLM responses, but you will not be able to close Phase 1 box 6 and will be bending the PRD §16 order.
+
+**Step 1 — Close Phase 1 box 6 (2–3 credits, do it once).** Fetch exactly one real hotel and capture the fixtures. Full procedure: [`tests/fixtures/README.md`](./tests/fixtures/README.md). Then prove the cache works by re-running and confirming `repo.api_calls_this_month()` does not move. That proof is the deliverable for this box.
+
+**Step 2 — Phase 2, the LLM tagging engine.** This is the biggest remaining chunk of real work.
+- `src/hotelpulse/analysis/config.py` — `PROMPT_VERSION = "v1"` lives here. Bumping it forces a re-tag because `tagged_reviews` is keyed on it. Also re-export `RECENCY_HALF_LIFE_DAYS = 180` and `MIN_MENTIONS = 3` from `hotelpulse.config` so there is one source of truth.
+- `src/hotelpulse/analysis/prompts.py` — PRD §12 system prompt **verbatim**. Do not paraphrase it; the eval numbers in the README depend on the prompt staying fixed while it is measured.
+- `src/hotelpulse/analysis/tagger.py` — batch 12 reviews per Claude Haiku call (`LLM_BATCH_SIZE` in config), JSON-only output, validate with Pydantic, retry once on parse failure. **The critical rule:** drop any mention where `quote not in review.text`, trying a whitespace-normalized match first, and log the drop rate. Use `repo.untagged_reviews(reviews, PROMPT_VERSION)` so tagged reviews are never resent — this is a direct cost saving.
+- `eval/labeled_reviews.jsonl` (30–50 reviews, **must include Hinglish**) and `eval/run_eval.py` reporting topic-level precision/recall/F1 and sentiment accuracy on correctly-detected topics. Output goes to `eval/results.md`.
+- `tests/test_tagger.py` with a mocked Anthropic client. The must-pass test is that a non-verbatim quote gets dropped.
+
+**Step 3 — Phases 3 and 4**, scoring/ranking formulas are in PRD §11 and must be implemented exactly:
+- `analysis/scoring.py` — recency weight `w = 0.5 ** (age_days / 180)`, and `w = 0.5` when the date is missing. Topic score `1 + 4 * (pos + 0.5 * mix) / weighted_total`, and `None` ("not enough data") below `MIN_MENTIONS = 3`.
+- `analysis/ranking.py` — fix-first priority `sum(severity * w)` over negative and mixed mentions, top 3 where `topic_score < 4.0`, tie-break on negative count. Top 3 strengths by score.
+- `services/pipeline.py` — the orchestrator the UI calls. Then replace the hardcoded blocks listed in §2.B.3 with real data. **Feed the existing `render_*` functions; do not rewrite `components.py`** (§5.1).
+
+**Do not start** Tripadvisor, reply drafts, or the trend chart. PRD §16 Phase 6 and §4 scope rule: finish Must and Should before any Could.
+
+### Phase 1 reference (done — read, don't rebuild)
+1. **Models & config.** [`models.py`](./src/hotelpulse/models.py), [`config.py`](./src/hotelpulse/config.py). PRD §9 verbatim plus additive view models (`HotelCandidate`, `TopicScore`, `OverallStats`, `Strength`, `CompetitorRow`, `AnalysisResult`, `ComparisonResult`, `ApiBudget`). SerpApi sends ratings as floats and review totals as comma strings under the key `reviews`, so the models coerce on input and junk becomes `None` rather than raising.
+2. **Database.** [`schema.sql`](./src/hotelpulse/db/schema.sql), [`connection.py`](./src/hotelpulse/db/connection.py), [`repo.py`](./src/hotelpulse/db/repo.py). `PRAGMA foreign_keys = ON` is required — SQLite defaults it off and the reviews/mentions FKs depend on it.
+3. **SerpApi layer.** [`client.py`](./src/hotelpulse/serp/client.py), [`maps.py`](./src/hotelpulse/serp/maps.py), [`reviews_maps.py`](./src/hotelpulse/serp/reviews_maps.py), [`normalize.py`](./src/hotelpulse/serp/normalize.py). Every search goes through `cached_search()`.
+4. **Tests.** [`conftest.py`](./tests/conftest.py), [`test_normalize.py`](./tests/test_normalize.py), [`test_cache.py`](./tests/test_cache.py).
 
 ---
 

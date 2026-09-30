@@ -41,4 +41,6 @@ include = [
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "-q"
+# No `-q` here on purpose: pytest verbosity is additive, so a default `-q`
+# would cancel out `-v` and make `py -m pytest -v` show dots instead of
+# per-test results. Default output is already compact enough.
