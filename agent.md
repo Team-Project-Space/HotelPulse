@@ -32,11 +32,11 @@
 - [`.vscode/settings.json`](./.vscode/settings.json): Configured Python interpreter to system Python 3.13 and added `./src` to `python.analysis.extraPaths`.
 
 ### B. Complete Frontend UI Implementation
-The entire UI has been built and styled to match the design mockups:
+The entire UI has been built and styled to match all three design mockups:
 1. **Design System & Components:** [`src/hotelpulse/app/components.py`](./src/hotelpulse/app/components.py)
    - Custom CSS injected for Plus Jakarta Sans / Inter typography, card shadows, pill badges, and layout grids.
-   - `render_top_navbar`: HotelPulse brand logo, hotel crumb, and session badge.
-   - `render_landing_hero`: Clean headline and subtitle for the landing screen.
+   - `render_top_navbar`: HotelPulse brand logo, hotel crumb (`Hotel Paradise · Mangalore`), and session badge (`Expires in 2 days`).
+   - `render_landing_hero`: Clean pill tag (`SIMPLE HOTEL INSIGHTS`), big headline (`Know what your guests really think.`), and subtitle.
    - `render_dashboard_header`: Hotel title, address, updated timestamp, and reviews analyzed count.
    - `render_metrics_bar`: 4-column metrics bar (`Overall rating ★ 4.2`, `Positive 72%`, `Needs attention 16%`, `Reviews analyzed 1,248`).
    - `render_fix_cards_html`: Top 3 "Fix First" cards with colored priority banners (`HIGH PRIORITY` / `MEDIUM`), negative mention counters, verbatim quotes, sources, and dates.
@@ -45,12 +45,13 @@ The entire UI has been built and styled to match the design mockups:
    - `render_comparison_table_and_actions`: Side-by-side bottom grid with:
      - Competitor comparison table (`Topic`, `You`, `Nearby`, `Gap`) and amber warning banner.
      - Top 3 actionable recommendations with blue circular number badges.
-2. **Streamlit App Entrypoint:** [`src/hotelpulse/app/streamlit_app.py`](./src/hotelpulse/app/streamlit_app.py)
-   - Dual-mode navigation:
-     - **Landing / Search View** matching `image.png` (centered card with Hotel name, City input, and `Analyze my hotel →` CTA).
-     - **Dashboard View** matching `image-1.png` and `image-2.png`.
-   - Interactive evidence dialog (`@st.dialog`) displaying real verbatim review quotes with reviewer names, dates, sources, and sentiment stars when clicking `View Evidence →`.
-   - Sidebar controls for SerpApi credit tracker (`14 / 250`), review caps, and source filters.
+2. **Streamlit App Flow:** [`src/hotelpulse/app/streamlit_app.py`](./src/hotelpulse/app/streamlit_app.py)
+   - **Default Entrance State (`view_mode = "landing"`):** Matches `image.png` exactly. Displays the centered white card with `Hotel name` and `City` text inputs and the full-width blue `Analyze my hotel →` CTA button.
+   - **Interactive Transition to Dashboard:** Clicking `Analyze my hotel →` saves the user's inputs, transitions to the Dashboard View (`image-1.png` & `image-2.png`), and renders full review analytics.
+   - **Switching Back:** Clicking `← Search Another Hotel` on the dashboard returns the user to the landing search card.
+   - **Sidebar Switcher:** Also includes a manual screen switcher in the sidebar for rapid design evaluation of both views.
+   - **Evidence Modal Dialogs:** Interactive modal (`@st.dialog`) displaying real verbatim review quotes with reviewer names, dates, sources, and sentiment stars when clicking `View Evidence →`.
+   - **SerpApi Credit Monitor:** Sidebar tracks live searches used against the 250/month quota.
 
 ### C. Critical Fixes Made & Gotchas to Know
 1. **HTML Rendering in Streamlit:**

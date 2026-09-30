@@ -13,7 +13,7 @@ html, body, [class*="css"] {
 
 /* Remove default Streamlit top padding and margins */
 .block-container {
-    padding-top: 1.5rem !important;
+    padding-top: 1.25rem !important;
     padding-bottom: 3rem !important;
     max-width: 1200px !important;
 }
@@ -27,9 +27,9 @@ header[data-testid="stHeader"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0 1.5rem 0;
+    padding: 0.75rem 0 1.25rem 0;
     border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .hp-logo {
@@ -86,7 +86,7 @@ header[data-testid="stHeader"] {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 2.5rem;
+    margin-top: 1.5rem;
     text-align: center;
 }
 
@@ -99,7 +99,7 @@ header[data-testid="stHeader"] {
     letter-spacing: 0.08em;
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     text-transform: uppercase;
 }
 
@@ -116,26 +116,38 @@ header[data-testid="stHeader"] {
     font-size: 1.125rem;
     color: #64748b;
     max-width: 580px;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
 }
 
-.hp-search-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
-    padding: 2.25rem;
-    width: 100%;
-    max-width: 500px;
-    text-align: left;
+/* Streamlit Container border override for search card */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03) !important;
+    padding: 1.75rem 2rem !important;
 }
 
-.hp-input-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #334155;
-    margin-bottom: 0.35rem;
-    display: block;
+/* Streamlit Input Styling inside Search Card */
+div[data-testid="stTextInput"] input {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+    color: #0f172a !important;
+    padding: 0.65rem 0.85rem !important;
+}
+
+div[data-testid="stTextInput"] input:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+div[data-testid="stTextInput"] label p {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+    margin-bottom: 0.15rem !important;
 }
 
 .hp-subtext {
@@ -349,18 +361,6 @@ header[data-testid="stHeader"] {
     margin-top: 0.5rem;
 }
 
-.hp-evidence-link {
-    color: #2563eb;
-    font-weight: 600;
-    font-size: 0.8125rem;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.hp-evidence-link:hover {
-    text-decoration: underline;
-}
-
 /* What guests like (Strengths) */
 .hp-strength-card {
     background: #ffffff;
@@ -542,30 +542,6 @@ header[data-testid="stHeader"] {
     color: #64748b;
 }
 
-/* Evidence Dialog Content */
-.hp-evidence-item {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 0.85rem;
-}
-
-.hp-evidence-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: #64748b;
-    margin-bottom: 0.4rem;
-}
-
-.hp-evidence-quote {
-    font-size: 0.875rem;
-    color: #1e293b;
-    font-style: italic;
-    line-height: 1.45;
-}
-
 /* Primary Button Styling Override for Streamlit */
 div.stButton > button[kind="primary"] {
     background-color: #2563eb !important;
@@ -573,8 +549,8 @@ div.stButton > button[kind="primary"] {
     border: none !important;
     border-radius: 8px !important;
     font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    padding: 0.65rem 1.5rem !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1.5rem !important;
     transition: all 0.2s ease !important;
     box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2) !important;
 }
@@ -605,21 +581,15 @@ footer {visibility: hidden;}
 </style>
 """
 
-def render_top_navbar(hotel_name=None, city=None, analyzed_reviews=None, on_change_callback=None):
+def render_top_navbar(hotel_name=None, city=None):
     """Renders the top navbar matching image.png & image-1.png."""
-    if hotel_name and city:
-        right_html = f"""<div class="hp-nav-right">
-<span class="hp-hotel-crumb">{hotel_name} · {city}</span>
-<span class="hp-badge-pill">Expires in 2 days</span>
-</div>"""
-    else:
-        right_html = """<div class="hp-nav-right">
-<span class="hp-badge-pill">Demo Session</span>
-</div>"""
-
+    crumb = f"{hotel_name} · {city}" if (hotel_name and city) else "Hotel Paradise · Mangalore"
     return f"""<div class="hp-navbar">
 <div class="hp-logo">Hotel<span>Pulse</span></div>
-{right_html}
+<div class="hp-nav-right">
+<span class="hp-hotel-crumb">{crumb}</span>
+<span class="hp-badge-pill">Expires in 2 days</span>
+</div>
 </div>"""
 
 def render_landing_hero():

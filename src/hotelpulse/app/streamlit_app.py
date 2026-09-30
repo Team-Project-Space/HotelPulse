@@ -27,12 +27,12 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Inject custom CSS
+# Inject custom CSS design system
 st.html(CUSTOM_CSS)
 
-# Session state initialization
+# Session state initialization - default to landing search screen
 if "view_mode" not in st.session_state:
-    st.session_state.view_mode = "dashboard"
+    st.session_state.view_mode = "landing"
 
 if "hotel_name" not in st.session_state:
     st.session_state.hotel_name = "Hotel Paradise"
@@ -40,16 +40,12 @@ if "hotel_name" not in st.session_state:
 if "city" not in st.session_state:
     st.session_state.city = "Mangalore"
 
-if "evidence_dialog_topic" not in st.session_state:
-    st.session_state.evidence_dialog_topic = None
-
 
 # Mock evidence database matching design.md
 MOCK_EVIDENCE = {
     "Cleanliness": [
         {
             "quote": "Rooms were not clean, especially the bathroom.",
-            "quote_en": "Rooms were not clean, especially the bathroom.",
             "source": "Google",
             "date": "12 Sep 2026",
             "reviewer": "Rahul Verma",
@@ -58,7 +54,6 @@ MOCK_EVIDENCE = {
         },
         {
             "quote": "Bedsheets had stains and bathroom had water stagnation.",
-            "quote_en": "Bedsheets had stains and bathroom had water stagnation.",
             "source": "Google",
             "date": "04 Sep 2026",
             "reviewer": "Pooja Nair",
@@ -67,7 +62,6 @@ MOCK_EVIDENCE = {
         },
         {
             "quote": "Housekeeping did not clean the room until we called twice.",
-            "quote_en": "Housekeeping did not clean the room until we called twice.",
             "source": "Tripadvisor",
             "date": "22 Aug 2026",
             "reviewer": "Vikram Sen",
@@ -78,7 +72,6 @@ MOCK_EVIDENCE = {
     "Wi-Fi": [
         {
             "quote": "WiFi is very slow and keeps disconnecting.",
-            "quote_en": "WiFi is very slow and keeps disconnecting.",
             "source": "Tripadvisor",
             "date": "8 Sep 2026",
             "reviewer": "Anand K.",
@@ -87,7 +80,6 @@ MOCK_EVIDENCE = {
         },
         {
             "quote": "Zero WiFi range on the 3rd floor rooms.",
-            "quote_en": "Zero WiFi range on the 3rd floor rooms.",
             "source": "Google",
             "date": "29 Aug 2026",
             "reviewer": "Kavita S.",
@@ -98,7 +90,6 @@ MOCK_EVIDENCE = {
     "Breakfast": [
         {
             "quote": "Breakfast was good but there were not many choices.",
-            "quote_en": "Breakfast was good but there were not many choices.",
             "source": "Google",
             "date": "6 Sep 2026",
             "reviewer": "Manish Rao",
@@ -107,7 +98,6 @@ MOCK_EVIDENCE = {
         },
         {
             "quote": "Same idli sambar breakfast every morning with no fruits.",
-            "quote_en": "Same idli sambar breakfast every morning with no fruits.",
             "source": "Google",
             "date": "18 Aug 2026",
             "reviewer": "Deepak G.",
@@ -147,18 +137,20 @@ def show_evidence_modal(topic_name):
         )
 
 
-# Sidebar controls for evaluation & configuration
+# Sidebar controls for configuration & debugging
 with st.sidebar:
     st.markdown("### ⚙️ Demo Controls")
     selected_view = st.radio(
-        "Screen Mode",
-        options=["Dashboard View", "Landing / Search View"],
-        index=0 if st.session_state.view_mode == "dashboard" else 1,
+        "Current Screen",
+        options=["Landing / Search View", "Dashboard View"],
+        index=0 if st.session_state.view_mode == "landing" else 1,
     )
-    if selected_view == "Dashboard View":
-        st.session_state.view_mode = "dashboard"
-    else:
+    if selected_view == "Landing / Search View" and st.session_state.view_mode != "landing":
         st.session_state.view_mode = "landing"
+        st.rerun()
+    elif selected_view == "Dashboard View" and st.session_state.view_mode != "dashboard":
+        st.session_state.view_mode = "dashboard"
+        st.rerun()
 
     st.divider()
     st.markdown("### 📊 SerpApi Credit Status")
@@ -178,42 +170,43 @@ with st.sidebar:
 # RENDER: Landing / Search View (image.png)
 # ==========================================
 if st.session_state.view_mode == "landing":
-    st.html(render_top_navbar())
+    st.html(
+        render_top_navbar(
+            hotel_name=st.session_state.hotel_name,
+            city=st.session_state.city,
+        )
+    )
     st.html(render_landing_hero())
 
-    # Centered search card container
+    # Centered search card container matching image.png
     col_l, col_center, col_r = st.columns([1, 1.4, 1])
     with col_center:
-        st.html('<div class="hp-search-card">')
+        with st.container(border=True):
+            st.markdown('<label style="font-size:0.875rem; font-weight:600; color:#334155; margin-bottom:0.25rem; display:block;">Hotel name</label>', unsafe_allow_html=True)
+            hotel_input = st.text_input(
+                "Hotel name",
+                value=st.session_state.hotel_name,
+                label_visibility="collapsed",
+                placeholder="Hotel Paradise",
+            )
 
-        st.html('<label class="hp-input-label">Hotel name</label>')
-        hotel_input = st.text_input(
-            "Hotel name",
-            value=st.session_state.hotel_name,
-            label_visibility="collapsed",
-            placeholder="e.g. Hotel Paradise",
-        )
+            st.markdown('<label style="font-size:0.875rem; font-weight:600; color:#334155; margin-top:0.85rem; margin-bottom:0.25rem; display:block;">City</label>', unsafe_allow_html=True)
+            city_input = st.text_input(
+                "City",
+                value=st.session_state.city,
+                label_visibility="collapsed",
+                placeholder="Mangalore",
+            )
 
-        st.html('<label class="hp-input-label" style="margin-top:0.75rem;">City</label>')
-        city_input = st.text_input(
-            "City",
-            value=st.session_state.city,
-            label_visibility="collapsed",
-            placeholder="e.g. Mangalore",
-        )
+            st.html("<div style='height: 1.25rem;'></div>")
 
-        st.html("<div style='height: 1rem;'></div>")
+            if st.button("Analyze my hotel →", type="primary", use_container_width=True):
+                st.session_state.hotel_name = hotel_input or "Hotel Paradise"
+                st.session_state.city = city_input or "Mangalore"
+                st.session_state.view_mode = "dashboard"
+                st.rerun()
 
-        if st.button("Analyze my hotel →", type="primary", use_container_width=True):
-            st.session_state.hotel_name = hotel_input
-            st.session_state.city = city_input
-            st.session_state.view_mode = "dashboard"
-            st.rerun()
-
-        st.html(
-            '<div class="hp-subtext">We analyze available guest reviews from Google and Tripadvisor.</div>'
-        )
-        st.html("</div>")
+            st.html('<div class="hp-subtext">We analyze available guest reviews from Google and Tripadvisor.</div>')
 
 
 # ==========================================
@@ -398,4 +391,3 @@ else:
             actions=next_actions,
         )
     )
-
