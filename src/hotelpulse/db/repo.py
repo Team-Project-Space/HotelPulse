@@ -90,24 +90,74 @@ def cache_put(
         )
 
 
-def api_calls_this_month(month: str | None = None) -> int:
-    """Count SerpApi calls made this month, i.e. the credit spend.
+# ---------------------------------------------------------------------------
+# api_calls -- append-only credit ledger
+# ---------------------------------------------------------------------------
 
-    One row in `api_cache` equals one credit spent, because a response is only
-    written after a real API call. Cached replays never insert a row, so this
-    counts spend rather than usage. `month` defaults to the current UTC month
-    in `YYYY-MM` form.
+
+def log_api_call(
+    key: str,
+    engine: str,
+    params: dict[str, Any],
+    search_id: str | None = None,
+    called_at: str | None = None,
+) -> int:
+    """Record one spent credit. Returns the ledger row id.
+
+    `api_cache` cannot serve this purpose: it holds one row per unique query and
+    is overwritten when that query is refreshed, so N refreshes of one query
+    would look like a single call. This table only ever appends, so
+    `COUNT(*)` equals credits actually spent.
+    """
+    stamp = called_at or datetime.now(timezone.utc).isoformat(timespec="seconds")
+    with db_session() as conn:
+        cur = conn.execute(
+            """
+            INSERT INTO api_calls (engine, cache_key, params_json, search_id, called_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                engine,
+                key,
+                json.dumps(params, sort_keys=True, default=str),
+                search_id,
+                stamp,
+            ),
+        )
+        return int(cur.lastrowid or 0)
+
+
+def api_calls_this_month(month: str | None = None) -> int:
+    """Credits spent this month, i.e. the real SerpApi drawdown.
+
+    `month` defaults to the current UTC month as `YYYY-MM`. Cached replays never
+    append here, so this counts spend rather than usage.
     """
     stamp = month or datetime.now(timezone.utc).strftime("%Y-%m")
     row = get_conn().execute(
-        "SELECT COUNT(*) AS n FROM api_cache WHERE fetched_at LIKE ?",
+        "SELECT COUNT(*) AS n FROM api_calls WHERE called_at LIKE ?",
         (f"{stamp}%",),
     ).fetchone()
     return int(row["n"]) if row else 0
 
 
+def api_calls_today() -> int:
+    """Credits spent today, for the 50/hour guard (approximate)."""
+    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    row = get_conn().execute(
+        "SELECT COUNT(*) AS n FROM api_calls WHERE called_at LIKE ?", (f"{day}%",)
+    ).fetchone()
+    return int(row["n"]) if row else 0
+
+
+def cached_response_count() -> int:
+    """Distinct responses held locally. Not a credit count -- use api_calls_this_month."""
+    row = get_conn().execute("SELECT COUNT(*) AS n FROM api_cache").fetchone()
+    return int(row["n"]) if row else 0
+
+
 def cache_stats() -> tuple[int, int]:
-    """(total cached responses, engines represented)."""
+    """(cached responses, distinct engines)."""
     row = get_conn().execute(
         "SELECT COUNT(*) AS n, COUNT(DISTINCT engine) AS e FROM api_cache"
     ).fetchone()

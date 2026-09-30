@@ -56,10 +56,24 @@ CREATE TABLE IF NOT EXISTS tagged_reviews (
 CREATE INDEX IF NOT EXISTS idx_reviews_hotel ON reviews(hotel_id);
 CREATE INDEX IF NOT EXISTS idx_mentions_review ON mentions(review_id);
 
+-- Added by the implementation. `api_cache` holds one row per unique query and
+-- is overwritten on refresh, so it cannot be used to measure credit spend. This
+-- append-only ledger records every outbound API call and is the source of truth
+-- for the sidebar credit meter and the monthly budget guard.
+CREATE TABLE IF NOT EXISTS api_calls (
+  call_id     INTEGER PRIMARY KEY AUTOINCREMENT,
+  engine      TEXT NOT NULL,
+  cache_key   TEXT NOT NULL,
+  params_json TEXT NOT NULL,
+  search_id   TEXT,
+  called_at   TEXT NOT NULL
+);
+
 -- Added by the implementation. `mentions` is queried almost entirely by
 -- (hotel, topic) via a join on reviews, and `api_cache` is scanned by month
 -- for the sidebar credit counter.
 CREATE INDEX IF NOT EXISTS idx_mentions_topic ON mentions(topic);
 CREATE INDEX IF NOT EXISTS idx_reviews_date ON reviews(review_date);
 CREATE INDEX IF NOT EXISTS idx_api_cache_fetched ON api_cache(fetched_at);
+CREATE INDEX IF NOT EXISTS idx_api_calls_called ON api_calls(called_at);
 CREATE INDEX IF NOT EXISTS idx_hotels_own ON hotels(is_own);
