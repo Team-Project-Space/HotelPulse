@@ -4,11 +4,14 @@
 > Read this document first before writing code or running commands.
 
 > **Status at a glance**
-> - Phase 1 of 7 is **5 of 6 boxes complete**. 94 offline tests pass.
-> - The dashboard **runs but displays mock data** — it does not fetch anything yet.
-> - **Your next task is Phase 2 (the LLM tagging engine)**, preceded by closing Phase 1 box 6.
-> - **Both remaining steps need an API key in `.env`.** Start at §4 Step 0.
+> - Phase 1 of 7 is **6 of 6 boxes complete**. Offline tests pass (134 passed, 0 skipped).
+> - Real fixtures captured for **Hotel O by OYO Manyata Stay Inn, Bangalore** (`tests/fixtures/maps_*.json`). Cache proof: re-fetch spent **0** extra credits.
+> - Phase 2 tagging engine is **built** against free LLMs (Gemini preferred, Groq fallback). Paid Anthropic is **removed**.
+> - Phases 3–4 scoring/ranking/pipeline are **wired into Streamlit**. Dashboard shows **real OYO Bangalore data**, not mock rows.
+> - `.env` needs `SERPAPI_API_KEY` + `GEMINI_API_KEY` (or `GROQ_API_KEY`). Start at §4 Step 0.
 > - Run with `py`, never `.venv` (WDAC blocks it). See §3 and Gotcha 3.
+> - **Start the app:** from `D:\HotelPulse` run `py -m streamlit run src\hotelpulse\app\streamlit_app.py` then click **Load demo: OYO · Bangalore** (sidebar) or search any hotel+city.
+- **SQLite / Streamlit threads:** connections are thread-local in `db/connection.py` (Streamlit button callbacks run on a different thread than the first script run). If you see `SQLite objects created in a thread...`, restart Streamlit after a code change — do not "fix" it by forcing `check_same_thread=False` alone on a process-global handle.
 
 ---
 
@@ -69,7 +72,7 @@ The UI is styled to match all three design mockups and runs, but **nothing is wi
 3. **Windows Application Control (WDAC Error 4551):**
    - On this machine, running `.venv\Scripts\python.exe` is blocked by Windows security policy.
    - **Always run commands using the system `py` command** (e.g. `py -m streamlit run ...`, `py -m pytest ...`), which points to `C:\Users\Asus\AppData\Local\Programs\Python\Python312\python.exe` (**Python 3.12.4** — the only interpreter installed; there is no Python 3.13 on this box).
-   - Dependencies are installed into that system interpreter (`py -m pip install -e .`). It already hosts torch/transformers/scikit-learn; the HotelPulse additions are streamlit, serpapi, anthropic and pytest. Verified working.
+   - Dependencies are installed into that system interpreter (`py -m pip install -e .`). It hosts streamlit, serpapi, google-genai, groq and pytest. Paid `anthropic` has been **removed** — tagging uses free Gemini (preferred) or Groq.
 4. **`pip install` is slow here, not broken.** The wheels are large (`streamlit` 10.1 MB, `pydeck` 11.4 MB) and download at roughly 30–40 kB/s, so a fresh `pip install` can exceed 10 minutes. It is not hung. For long installs, run them backgrounded with output redirected to a log and poll the log rather than raising the tool timeout.
 5. **Editable install needs `hatchling` preinstalled** if you pass `--no-build-isolation`. It is now pinned in `requirements.txt`.
 6. **SerpApi reality check — PRD §6.1 contains three factual errors.** Verified against SerpApi docs 2026-09-30. PRD §21.7 says to adapt the code and note it in the README, so these are deliberate deviations, not bugs:
@@ -146,28 +149,33 @@ Do not skip these — without them `import hotelpulse` fails and Streamlit canno
 | Phase | PRD §16 boxes | Status |
 |---|---|---|
 | 0 (env) | 1 | Done |
-| 1 fetch and cache | 2–6 | **5 of 6 done. Box 6 is the only thing left.** |
-| 2 tagging | all | Not started — **this is your next task** |
-| 3–7 | all | Not started |
+| 1 fetch and cache | 2–6 | **Done.** Real fixtures captured; cache proof passed (0 extra credits on re-fetch). |
+| 2 tagging | all | **Built** offline + live Gemini. Eval harness ready (`eval/run_eval.py --live`). |
+| 3–4 scoring + dashboard | all | **Wired.** `analysis/scoring.py` + `analysis/ranking.py` + `services/pipeline.py` feed `streamlit_app.py`. Live OYO Bangalore dashboard works. |
+| 5–7 | all | Not started |
 
-94 offline tests pass. The database, SerpApi cache, Maps fetchers and normalization are built and tested. The dashboard still runs on mock data.
+134 offline tests pass. The database, SerpApi cache, Maps fetchers, normalization, free-LLM tagger, scoring/ranking, pipeline and Streamlit UI are built and tested end-to-end on real Maps data.
 
 ### Your next step, in order
 
-**Step 0 — Get an API key.** Everything below is blocked without it:
+**Step 0 — Get free API keys.** Everything below is blocked without at least one LLM key:
 ```powershell
 copy .env.example .env
 ```
-Add `SERPAPI_API_KEY=<key>` (finishes Phase 1 box 6) and `ANTHROPIC_API_KEY=<key>` (needed for Phase 2). `.env` is gitignored — never commit it. If you genuinely have no key, you can still build Phase 2's tagger against mocked LLM responses, but you will not be able to close Phase 1 box 6 and will be bending the PRD §16 order.
+Add `SERPAPI_API_KEY=<key>` (finishes Phase 1 box 6) and **one free LLM key**:
+- `GEMINI_API_KEY` — preferred. Get one at https://aistudio.google.com/apikey (no credit card).
+- `GROQ_API_KEY` — fallback. https://console.groq.com/keys
+
+`.env` is gitignored — never commit it. Paid Anthropic is no longer used. If you have no LLM key, you can still build Phase 2 against mocked responses, but you will not get live tagging/eval numbers.
 
 **Step 1 — Close Phase 1 box 6 (2–3 credits, do it once).** Fetch exactly one real hotel and capture the fixtures. Full procedure: [`tests/fixtures/README.md`](./tests/fixtures/README.md). Then prove the cache works by re-running and confirming `repo.api_calls_this_month()` does not move. That proof is the deliverable for this box.
 
 **Step 2 — Phase 2, the LLM tagging engine.** This is the biggest remaining chunk of real work.
 - `src/hotelpulse/analysis/config.py` — `PROMPT_VERSION = "v1"` lives here. Bumping it forces a re-tag because `tagged_reviews` is keyed on it. Also re-export `RECENCY_HALF_LIFE_DAYS = 180` and `MIN_MENTIONS = 3` from `hotelpulse.config` so there is one source of truth.
 - `src/hotelpulse/analysis/prompts.py` — PRD §12 system prompt **verbatim**. Do not paraphrase it; the eval numbers in the README depend on the prompt staying fixed while it is measured.
-- `src/hotelpulse/analysis/tagger.py` — batch 12 reviews per Claude Haiku call (`LLM_BATCH_SIZE` in config), JSON-only output, validate with Pydantic, retry once on parse failure. **The critical rule:** drop any mention where `quote not in review.text`, trying a whitespace-normalized match first, and log the drop rate. Use `repo.untagged_reviews(reviews, PROMPT_VERSION)` so tagged reviews are never resent — this is a direct cost saving.
+- `src/hotelpulse/analysis/tagger.py` — batch 12 reviews per free-LLM call (Gemini Flash preferred, Groq fallback; `LLM_BATCH_SIZE` in config), JSON-only output, validate with Pydantic, retry once on parse failure. **The critical rule:** drop any mention where `quote not in review.text`, trying a whitespace-normalized match first, and log the drop rate. Use `repo.untagged_reviews(reviews, PROMPT_VERSION)` so tagged reviews are never resent — this is a direct cost saving.
 - `eval/labeled_reviews.jsonl` (30–50 reviews, **must include Hinglish**) and `eval/run_eval.py` reporting topic-level precision/recall/F1 and sentiment accuracy on correctly-detected topics. Output goes to `eval/results.md`.
-- `tests/test_tagger.py` with a mocked Anthropic client. The must-pass test is that a non-verbatim quote gets dropped.
+- `tests/test_tagger.py` with a mocked free LLM client (`FakeLLM`). The must-pass test is that a non-verbatim quote gets dropped.
 
 **Step 3 — Phases 3 and 4**, scoring/ranking formulas are in PRD §11 and must be implemented exactly:
 - `analysis/scoring.py` — recency weight `w = 0.5 ** (age_days / 180)`, and `w = 0.5` when the date is missing. Topic score `1 + 4 * (pos + 0.5 * mix) / weighted_total`, and `None` ("not enough data") below `MIN_MENTIONS = 3`.

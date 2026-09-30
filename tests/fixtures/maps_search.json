@@ -1,0 +1,825 @@
+{
+  "search_metadata": {
+    "id": "6abd4051c2bb99da1eb9bd5c",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/nOJkPbjUGtxGKe12ZWKGYWWIPqyaT2_I3TiNgdr6B88/6abd4051c2bb99da1eb9bd5c.json",
+    "markdown_endpoint": "https://serpapi.com/searches/nOJkPbjUGtxGKe12ZWKGYWWIPqyaT2_I3TiNgdr6B88/6abd4051c2bb99da1eb9bd5c.md",
+    "created_at": "2026-09-30 17:01:05 UTC",
+    "processed_at": "2026-09-30 17:01:05 UTC",
+    "google_maps_url": "https://www.google.com/maps/search/OYO%2C+Bangalore//data=!3m1!4b1!4m2!2m1!6e5?hl=en",
+    "raw_html_file": "https://serpapi.com/searches/nOJkPbjUGtxGKe12ZWKGYWWIPqyaT2_I3TiNgdr6B88/6abd4051c2bb99da1eb9bd5c.html",
+    "prettify_html_file": "https://serpapi.com/searches/nOJkPbjUGtxGKe12ZWKGYWWIPqyaT2_I3TiNgdr6B88/6abd4051c2bb99da1eb9bd5c.prettify",
+    "total_time_taken": 1.58
+  },
+  "search_parameters": {
+    "engine": "google_maps",
+    "type": "search",
+    "q": "OYO, Bangalore",
+    "google_domain": "google.com",
+    "hl": "en"
+  },
+  "search_information": {
+    "local_results_state": "Results for exact spelling",
+    "query_displayed": "OYO, Bangalore"
+  },
+  "local_results": [
+    {
+      "position": 1,
+      "title": "Hotel O by OYO Manyata Stay Inn",
+      "place_id": "ChIJlW-fcgQZrjsRyMJwEhHdneU",
+      "data_id": "0x3bae1904729f6f95:0xe59ddd111270c2c8",
+      "data_cid": "16545623671422632648",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae1904729f6f95%3A0xe59ddd111270c2c8&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae1904729f6f95%3A0xe59ddd111270c2c8&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 13.0595277,
+        "longitude": 77.6271719
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJlW-fcgQZrjsRyMJwEhHdneU",
+      "provider_id": "/g/11t4yzk23w",
+      "rating": 4.6,
+      "reviews": 992,
+      "price": "$11",
+      "extracted_price": 11,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "Sri Sai pickle shop, NA, Manyata Gate 5, Rachenahalli Main Road, 3rd Cross Rd, P&t LayoutBeside, Bengaluru, Karnataka 560077, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/187932/?utm_source=Google&utm_medium=GMB",
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9QTnd0i5XnpDgVNfw80-MxNQvpUznxzkv0UCp0i8GBBHWVuD7zJQWDXEdk8Ar-uGmnnZ_o33_Dota0cDgCUR71X-Xv5ERFi5e5JyObxUnVMr9LTUWb4EBj-O8LvDAWGKOkBVs4=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/vqEBonicHcTdCoIwGADQJ1ouTLKgC21m9KMYzUk3UsumWd-Gm2Y-YO_Q2wSdi_P9lMYoPbesR2mPhJTiUbS6aLgEU4AZcfm0hNKIa6QtL2LVe5Yc4YorJwNFRBrdXi5G-z5KOkUH6Ie6w3SpcOWGvr9maUumwyZhJAuutes1qA2fAKdc2nZOpDljTsSSHqbjDGWdExxWlVM4m3d86Smk-2a2O1J2mQT-HcXuriMeC7dx7ad6sniNMcao_M8R_AASGENd"
+    },
+    {
+      "position": 2,
+      "title": "Super Hotel O by OYO Thimmaiah Rd Rajajinagar",
+      "place_id": "ChIJ86op35I9rjsREnQfr0ya0-o",
+      "data_id": "0x3bae3d92df29aaf3:0xead39a4caf1f7412",
+      "data_cid": "16921037879107351570",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae3d92df29aaf3%3A0xead39a4caf1f7412&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae3d92df29aaf3%3A0xead39a4caf1f7412&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.988638799999999,
+        "longitude": 77.5477858
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJ86op35I9rjsREnQfr0ya0-o",
+      "provider_id": "/g/1tctv_rh",
+      "rating": 3.3,
+      "reviews": 743,
+      "price": "$17",
+      "extracted_price": 17,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Villa"
+      ],
+      "address": "Plot Number 79, 1st Stage, 5th Phase, West of Chord Road, Thimmaiah Rd, Shivanagar, Rajajinagar, Bengaluru, Karnataka 560010, India",
+      "country": "India",
+      "phone": "+91 124 433 0599",
+      "website": "https://www.oyorooms.com/760/",
+      "description": "Simple budget hotel with dining. Unpretentious rooms with a/c in a straightforward budget hotel offering Wi-Fi & dining.",
+      "amenities": [
+        "Pool",
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Wi-Fi"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9QstcrcAUBlFyjJm-1nK7hlcaWY4h9hrpVsX8zuCf7Uyr-3Mlj8dODLVbwMB1LP26yywJ1lc5meJRDq-RWJKkWTyTlNhbLRllMuoku9_o-ld821fwOZNjF3zoCE8t15UuSA6Nhc=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/HQrftXicHcTREoFAFADQL1q1ImXGQ8RDKkTCi-FKK7c27e406wd9g78x4zyc74dJ2YixYSCzegXnBeZK5C3wWua17AGvjKIRBAQRhhdnD-1uhIQWvHSKC10GFaH1csQQLtlxwFzWNntxcN5qdh-luiVWhKVzW_nh_tpFUxqu-7bWXUARhlUeJP6LJFmwfGY7vcOYXcMEMVL8qdwzJ3hz-vTerU5xubDefDZ3JB2mauvZMYNJR03TJOw_kPoHtnRFEw"
+    },
+    {
+      "position": 3,
+      "title": "Townhouse by OYO Spruce Hotels Bellandur",
+      "place_id": "ChIJfcjLFckTrjsRspMl3EOdXlg",
+      "data_id": "0x3bae13c915cbc87d:0x585e9d43dc2593b2",
+      "data_cid": "6367699837930279858",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae13c915cbc87d%3A0x585e9d43dc2593b2&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae13c915cbc87d%3A0x585e9d43dc2593b2&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.924263,
+        "longitude": 77.6668518
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJfcjLFckTrjsRspMl3EOdXlg",
+      "provider_id": "/g/11h8jkx0_b",
+      "rating": 4.4,
+      "reviews": 1256,
+      "price": "$24",
+      "extracted_price": 24,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "No 281, P N C Aspire, 7th Main Road, I B L U R, Marathahalli - Sarjapur Outer Ring Rd, Junction, Bellandur, Bengaluru, Karnataka 560103, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/106105/",
+      "description": "Relaxed hotel with breakfast & Wi-Fi. Unpretentious hotel, for Indian nationals only, offering parking, breakfast & Wi-Fi.",
+      "amenities": [
+        "Free parking",
+        "Free breakfast",
+        "Free Wi-Fi",
+        "Air-conditioned"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9Qkw2mdEhzF9kmA6JjD8oQExmHZcxoL1rOXJ2kWyyiSJHOR-nYxP760mwKI6Ulc4rftav_fCh9hNTqs_oRXucKPPYiV_pd-XoNjglu9Vl24gf9afwFaCUPjP6JQkRKBEPoPa2D8=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/JXbzE3icHcRbjoIwFADQFVUQDWNN_PCBccBgwRfODyEVWqDlIi0CbtA1uBuTOR_n8-Za12puGIJPRgyAibRVaUOh0mmlRxSkwWqFqELKWPrXfMBB2Vny7vDXFpdyabvFZgaB08vdH-1hP24OkWuV12HIj-7uEKLq1pMf25Sd92ufBZ02mU6ecbbmmPunh4ohjFrqEXLLL3F9RxH4BRMtvghryjKcZN02WZ9JQWw3KENv5RAgibWZLbqxaZqI_09R9QXOhkVs"
+    },
+    {
+      "position": 4,
+      "title": "Hotel O by OYO Aaira Inn",
+      "place_id": "ChIJ99eqmEgXrjsRsDyse2RNSK0",
+      "data_id": "0x3bae174898aad7f7:0xad484d647bac3cb0",
+      "data_cid": "12486315060851653808",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae174898aad7f7%3A0xad484d647bac3cb0&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae174898aad7f7%3A0xad484d647bac3cb0&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 13.008921599999999,
+        "longitude": 77.64261259999999
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJ99eqmEgXrjsRsDyse2RNSK0",
+      "provider_id": "/g/11gk34bvnj",
+      "rating": 3.3,
+      "reviews": 231,
+      "price": "$14",
+      "extracted_price": 14,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "27 Sankhal Complex, 3rd Cross, Subrna Paliya, Dodda Banaswadi Main Rd, Bengaluru, Karnataka 560033, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/18616/?utm_source=Google&utm_medium=GMB",
+      "description": "Functional lodging with free Wi-Fi. Understated hotel featuring free Wi-Fi & vegetarian breakfast, plus a 24/7 front desk.",
+      "amenities": [
+        "Air-conditioned",
+        "Wi-Fi",
+        "Parking"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9QKJ_oytx6BVFVaG_aa-vi54sgzThqm8oto2-j9UfvSfZ2GEGVzBejCxujZY6MbZGBmUnPkvi7YxHli4yZ4p0CdU89idAe5e9CLmgUXnCGpeE7X3o2hSzRRw5rUoqmUbjYqDqGP=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/izXcTXicHcRNjoIwGADQE1UYBBWTWQg6nYw_cdSisDGItS3SfmArAhf0DN7GxLd4ryc3ptRjyyp4v8cAWEHvmt4yUIYq08tAWqzUKNNIW5PVXrT-__zvCK1pBkH0E6X4mKaoFp6rWbfjlRyBAQflPrnU20vi4BmOuoDmYXPPk3iwPCU4kEStr7UYxs1vIdw2cUs7PJORL84T6lE_XEhGDirEJZ0ND31w-LbbbB7ejUAlySmPq2mF19-PL9u2Ef-cIfUG0pRF0w"
+    },
+    {
+      "position": 5,
+      "title": "Hotel O Home Exotic Stay Bsk rd Stage",
+      "place_id": "ChIJI0tHaeA_rjsR0KSI_7_wm3c",
+      "data_id": "0x3bae3fe069474b23:0x779bf0bfff88a4d0",
+      "data_cid": "8618747019320141008",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae3fe069474b23%3A0x779bf0bfff88a4d0&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae3fe069474b23%3A0x779bf0bfff88a4d0&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.924876999999999,
+        "longitude": 77.55122589999999
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJI0tHaeA_rjsR0KSI_7_wm3c",
+      "provider_id": "/g/11h94xmt44",
+      "rating": 3.1,
+      "reviews": 235,
+      "price": "$14",
+      "extracted_price": 14,
+      "type": "Hotel",
+      "types": [
+        "Hotel"
+      ],
+      "address": "17 Dominos, Dr Puneeth Rajkumar Rd, Kathreguppe, Banashankari 3rd Stage, Banashankari, Bengaluru, Karnataka 560085, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/110650/",
+      "amenities": [
+        "Pool",
+        "Free breakfast",
+        "Free Wi-Fi",
+        "Air-conditioned"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9SkY_i5AaJgQTxLoYYMa3RD10kHA1zT3x8HyVXj6S_9MqfYlzYFdjf9dar8Ycfiy1xEFiNkssQ-qZCH5zLTI421X_wHHsoEf0d3nr_icV2szKH3UbKNpYQXQbSEVPfunczL6ihC=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/W3viX3icHcRRboIwGADgE1VaO40s8YE4TDeRDGGM7oVgoVDBFvkxQi-4M3ibJfsevudvM449vDpO19BFbUzdVXeoBmH0WOlxIczVqXtAAhA4XvitZjduea5WXvFRR8kUGM6PBT29Edwyj9iEThs2p9llHefu8SZ5Z_m-vEi3LIYNF1LNZPL3KmwBInT72bGVDZL3lyXJ8gdjYHyJS6qHXIl0CfbA6Nf5EPY8yqJz7Kef8q6FDdaq2W0fBGOMmv8F0n9zKEUI"
+    },
+    {
+      "position": 6,
+      "title": "Townhouse by OYO BTM Layout Near Madiwala Lake Formerly Q Rooms",
+      "place_id": "ChIJh-tiTqkVrjsROX5v8b3XLJk",
+      "data_id": "0x3bae15a94e62eb87:0x992cd7bdf16f7e39",
+      "data_cid": "11037433997577649721",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae15a94e62eb87%3A0x992cd7bdf16f7e39&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae15a94e62eb87%3A0x992cd7bdf16f7e39&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.9135104,
+        "longitude": 77.60551629999999
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJh-tiTqkVrjsROX5v8b3XLJk",
+      "provider_id": "/g/11fqd45bpj",
+      "rating": 4.5,
+      "reviews": 1495,
+      "price": "$26",
+      "extracted_price": 26,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "Plot Number 447, 7th Cross Rd, Stage 2, Mico Layout, BTM Layout 2nd Stage, BTM Layout, Bengaluru, Karnataka 560076, India",
+      "country": "India",
+      "phone": "+91 124 620 1784",
+      "website": "https://www.oyorooms.com/106081/",
+      "description": "Relaxed hotel with a restaurant. Informal hotel, catering to Indian nationals only, featuring a simple restaurant & Wi-Fi.",
+      "amenities": [
+        "Pool",
+        "Free breakfast",
+        "Free Wi-Fi",
+        "Air-conditioned"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9R0WgxePZBC2XLNdvMPkVmFb44s9XRJTBAaibCxioCpEWJq83cfrO5_AQ2dnkEDT08nc0I5-hgGEtthchktvtvBhqP0Aez-31Z-lVmrCOQqdUv0DlycnHmNnTfTn59NS2nj1hLw6vEtIh_7=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/ioYO4nicHcTRUoJAFADQL1pZQEqa6QGQSscQjcTxxcll3UvAXWBvq_aTPfc3zXQezu8PEPXmwXFa8CdKa9XKLyNHoZEk0kTozlG9YcIw40RZWd_CLS_VVeaHOPH2q6yyr3mz655O06kJ99tlEUcf9Sm51jrp03I5zHxxHtfBMdp4FTbpvOAzFHwRMFDPKREIaMiSjWHIeSS_me8eWLvrxmS9Gap3y-ftTeBLl2FxLjAIszcPP11YXe5sSgs43j9eXM45g_8Fwz-KvUdT"
+    },
+    {
+      "position": 7,
+      "title": "Hotel O by OYO NAR Comforts",
+      "place_id": "ChIJD2A5yAgWrjsRFQfOjnBCYjI",
+      "data_id": "0x3bae1608c839600f:0x326242708ece0715",
+      "data_cid": "3630537300813678357",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae1608c839600f%3A0x326242708ece0715&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae1608c839600f%3A0x326242708ece0715&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.9713,
+        "longitude": 77.5749
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJD2A5yAgWrjsRFQfOjnBCYjI",
+      "provider_id": "/g/11f11p20pz",
+      "rating": 3.3,
+      "reviews": 899,
+      "price": "$10",
+      "extracted_price": 10,
+      "type": "Hotel",
+      "types": [
+        "Hotel"
+      ],
+      "address": "Grand Krishna, 13, GK Temple St, opp. Vijayalaxmi theater, Basettypet, Huriopet, Chickpet, Bengaluru, Karnataka 560053, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/15542/",
+      "description": "Unfussy budget hotel with breakfast. Straightforward rooms in an unassuming budget hotel with breakfast, Wi-Fi & parking.",
+      "amenities": [
+        "Pool",
+        "Air-conditioned",
+        "Wi-Fi",
+        "Parking"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9SEqoZrNEbeDs_p1wkvO74M_JPgKHeRAJsoFPCmHFiSUTHQQ3uQLTM7wwDTLh_oSvzTYlrBXMYQypEQuZzW1Eq8urI9RDVsG2GRxnBjOSZBlwDXuV66CDSXkOFYG6KU4iocmYZkQw=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/arewRHicHcRJDoIwAADAF7GpwSXxIJZFBLEUFbiQ2DSALAVKrfJDn-BvTJzDfD_FOHZsoyh1MZdzSvOacEYGTNuRtKOMaaPkHZMwk5iyO93K9xqZPU2Hk3kngGWdJqpnsFz4mXvOjw4Jdy6j1nnfOFaJLpED4ZxDL_KXQoDIKzKKnlOU1IMR-wl8dybk6XTTzH7Fh8M6BFdmz-zw1RqPAKVGLUDMr7q-ByiuAiux9eNlUVLcJGkFxVZoqqpKxX8stT9BHkYD"
+    },
+    {
+      "position": 8,
+      "title": "Collection O by OYO Indian Music Museum Bangalore Formerly HKH Homes",
+      "place_id": "ChIJmSTuB0gVrjsRH2BFFsZQNgs",
+      "data_id": "0x3bae154807ee2499:0xb3650c61645601f",
+      "data_cid": "807921994866974751",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae154807ee2499%3A0xb3650c61645601f&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae154807ee2499%3A0xb3650c61645601f&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.880278899999999,
+        "longitude": 77.5884059
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJmSTuB0gVrjsRH2BFFsZQNgs",
+      "provider_id": "/g/11fm4_9wsy",
+      "rating": 3,
+      "reviews": 304,
+      "price": "$20",
+      "extracted_price": 20,
+      "type": "Hotel",
+      "types": [
+        "Hotel"
+      ],
+      "address": "Site No.237, Katha No.111, Assessment No.88 within the limits of Gottigere Group Panchayath, Kothnur, Situated at, Uttarhalli Hobli, Bengaluru, Karnataka 560076, India",
+      "country": "India",
+      "phone": "+91 124 433 0599",
+      "website": "https://www.oyorooms.com/53882/",
+      "description": "Low-key budget hotel with Wi-Fi. Unpretentious budget hotel offering bright, simply furnished rooms with a/c, plus Wi-Fi.",
+      "amenities": [
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Breakfast",
+        "Wi-Fi"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9T3aNstqwf6JtUtlKMlbr4eKR-KSRmjTmbyR389nEdyrUlJj8HiRPDSJG3TABcnOGt3LiTVIQfDuwJeOY6Dnp2G11uDAv93XjrMkvvj42W3fXs-62F-Lxcz7q5QguqOJe-6r-YHyy27gtw=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/t8D16XicHcTLUoMwFADQL7rlkUqLMy5wUGpoi6XUtksbQwBDgOQCxo90798441mc358KsTf3jiMrshBdJyQfDdesU8gVLljXOqI3wAwYJ9qfaxsW5H1vcJjLgOIJZbqTN73kaQ7pMW-bor3ZnKxD9fRh9UnSZr2p89f4SBNSRI9MZQmSbV28vRzKeJwpz65BrHo_8bwxjqaQXBq9-5ymZumfSXkxEPjPsP1i36vh7iDGIaMcAg3XjbX-SuD8MHuu60L1PwP1B3URRsI"
+    },
+    {
+      "position": 9,
+      "title": "Hotel O by OYO The Royal International Hotel",
+      "place_id": "ChIJVaM5No0VrjsRBhjSW6R2-zU",
+      "data_id": "0x3bae158d3639a355:0x35fb76a45bd21806",
+      "data_cid": "3889833151451764742",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae158d3639a355%3A0x35fb76a45bd21806&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae158d3639a355%3A0x35fb76a45bd21806&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.902675499999999,
+        "longitude": 77.6331484
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJVaM5No0VrjsRBhjSW6R2-zU",
+      "provider_id": "/g/11fqd45vq1",
+      "rating": 2.7,
+      "reviews": 460,
+      "price": "$9",
+      "extracted_price": 9,
+      "type": "Hotel",
+      "types": [
+        "Hotel"
+      ],
+      "address": "Tilak Nagar, Popular Colony, HSR Layout, Bengaluru, Karnataka 560068, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/84814/",
+      "description": "Modest budget hotel offering meals. Simple rooms with Wi-Fi & a/c in an unassuming budget hotel featuring breakfast, lunch & dinner.",
+      "amenities": [
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Breakfast",
+        "Wi-Fi"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9QEgpe_t9KvU40VmUO3be2CLK0CdV1uo59F8uiZMgtih7_4DHuy6rDWzPPjAQGKIoYihQPGGarTswadcrEZrfmssvjS6hy7xwLZ00JzRJyPSbgoloj9wghUaUiMCEryhtvBfaDJ9w=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/vnwNAXicHcTbDoIgAADQLzLpHm09lJqlXbSyli_NiACn4gAl-sM-ob9p6zyc74cqVcupbRe03yGckwI3EgvEK4Ur1UG8tEktLSQtac93F2Zg7JEa3xQM22QAzmWy799xz9mEwHmcuw0fwuWkYemWKEbHt4G7asxIuJd3FOXz2A_X_MpoHPl-Jk5SZw8kvFQ8Synb_DiiZvzSmxSA4H0ITHS8E17wHGpCkyxhW8cThqp28czcAOqZ7gIALPofWdUPOTFHHQ"
+    },
+    {
+      "position": 10,
+      "title": "Collection O by OYO 29 Church's Inn Near Cubbon Park",
+      "place_id": "ChIJWxV-IH4XrjsReOUgzz_axN4",
+      "data_id": "0x3bae177e207e155b:0xdec4da3fcf20e578",
+      "data_cid": "16052194939448124792",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae177e207e155b%3A0xdec4da3fcf20e578&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae177e207e155b%3A0xdec4da3fcf20e578&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.9751319,
+        "longitude": 77.6039452
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJWxV-IH4XrjsReOUgzz_axN4",
+      "provider_id": "/g/11rpq6f0r5",
+      "rating": 1.7,
+      "reviews": 318,
+      "price": "$12",
+      "extracted_price": 12,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "PLOT NO, Center, 29th Church Street, off Mahatma Gandhi Road, Shanthala Nagar, Ashok Nagar, Bengaluru, Karnataka 560001, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/3700/",
+      "amenities": [
+        "Free breakfast",
+        "Breakfast",
+        "Wi-Fi"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9TzbIHkRdM46UuIbdopNf360pT2jurI7_AF6ZfDov0ev2HJgYmJj97krXyRP1ZPHssdCMORS-bPjc9oIehNQDzmZSCfOx7XlWiF_I7zNlCIQRvP2HVsJg65gdYCf3j05sluwtYhfg=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/mmcwInicHcTdCoIwGADQJ1ouLcWgizDCCZnZr94Ezv1k04nftPINe4TeJuhcnO9HGtPCwrKUdCZCa6FYD6yjujGsMROqa0u0gCggsFbx5f72j2NBwkdabmfuqSdFqduYOy5uj3bVd8S7rTZuztd6wGyww0hkdVT53qO7vtNkmichQBlsd-kBFUlFfU2YjPfrsc4PAd-9vKu63Dc34o2xCsg-HRI7PEMk3Lkos4A7FZ6D6p8mk1wsn1OMMZL_KWp--ptFqQ"
+    },
+    {
+      "position": 11,
+      "title": "Hotel O by OYO With Inn",
+      "place_id": "ChIJ-VrrkrgXrjsRhX2nT9JQWHs",
+      "data_id": "0x3bae17b892eb5af9:0x7b5850d24fa77d85",
+      "data_cid": "8887942728825404805",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae17b892eb5af9%3A0x7b5850d24fa77d85&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae17b892eb5af9%3A0x7b5850d24fa77d85&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 13.030852399999999,
+        "longitude": 77.5629395
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJ-VrrkrgXrjsRhX2nT9JQWHs",
+      "provider_id": "/g/11h6g637kl",
+      "rating": 4.3,
+      "reviews": 959,
+      "price": "$15",
+      "extracted_price": 15,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Lodge",
+        "Serviced apartment"
+      ],
+      "address": "Withinn Hotel, 12th Main Rd, A.K.Colony, Gokula 1st Stage, Mathikere Extension, Mathikere, Bengaluru, Karnataka 560054, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.makemytrip.com/hotels/withinn_hotel-details-bangalore.html",
+      "description": "Low-key hotel for Indian nationals only. Unassuming hotel, for Indian nationals only, featuring simply furnished rooms & a restaurant.",
+      "amenities": [
+        "Pool",
+        "Free parking",
+        "Free Wi-Fi",
+        "Air-conditioned"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9SdtObDW7l6aBT6CRpMfTQyTvL6kRPnNwkpl2I9VYwS4tdkChXaSfI6G5d_8ZIOiG0FR5Az5kFOVqlm3r9pQ52I0t9qpsuxNNYJ1OdDsfSGJQtkaMrPvVejzLi__KgLRYOHtHXjB_2UwgxC=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/pSKZq3icHcTdEoFAGADQJ0orisy4ICORVj8iN0362bKrVvsRXtK1tzHjXJzvpwTgYiLLrBz0SNMQlt9F3qZNDXkNvbS5yoQLKRWSkGfOoXrpfgb4vDiMmJbMA83w-LYI3FfwsDXq7Wqno5wplh5GnT-EjBrlMfELSzPVLB6fLFyZaOmps7dKlzi8seug1bmrKhYC_cbF_ek40bqPs4UofHPtAk227e4R5pe3XcXxhthehFewOl7msbLvyNOYdn2EkFT-T6X6B6-FR9M"
+    },
+    {
+      "position": 12,
+      "title": "Collection O by OYO Global Stay",
+      "place_id": "ChIJ60-N-8k_rjsRwYpNEHafZCM",
+      "data_id": "0x3bae3fc9fb8d4feb:0x23649f76104d8ac1",
+      "data_cid": "2550338618427017921",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae3fc9fb8d4feb%3A0x23649f76104d8ac1&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae3fc9fb8d4feb%3A0x23649f76104d8ac1&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.913629199999999,
+        "longitude": 77.4970051
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJ60-N-8k_rjsRwYpNEHafZCM",
+      "provider_id": "/g/11s7fqwc0s",
+      "rating": 4.7,
+      "reviews": 1146,
+      "price": "$13",
+      "extracted_price": 13,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "RV Layout, Mailasandra, Bengaluru, Karnataka 560059, India",
+      "country": "India",
+      "phone": "+91 124 620 1730",
+      "website": "https://www.oyorooms.com/190173/?utm_source=Google&utm_medium=GMB",
+      "amenities": [
+        "Pool",
+        "Free breakfast",
+        "Breakfast",
+        "Wi-Fi"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9SjBhWxB92lnpZmgPhOwlBbCTxnaodc9mlYfVXO7WfpFmx9JjqnOplx3_NRaXEUxJ_miMUCaq_64-SnJPzA94Nt4PVw62aLB4QdIA0YrV-CC0OgeAT8isIETD3OMMg0d_ZMKCOcpg=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/ZGDcJ3icHcRdboIwAADgE1WqEGeX7AE6l4hCcSKoL4QVbDH909bQ7YY7grcx8Xv4Hv_cOWPfg0DwcMK0ZqK_2_5GtXK9chOqZcCMBdQCG8R5Pfyi3SXhtU_QTChzkqzgZBTJDy69anVHkRTHc3Ugb_XZfEmP0stVESN82OTf7WG592kjh2yP22szj8BOpcVfjKLcRUU1zmftJom23SqGx1sFMIaE9XG5GOxqWX6GJMsY7JpTtsaEGvYxTiGEgL-mQD0BWqFFLQ"
+    },
+    {
+      "position": 13,
+      "title": "Hotel O by OYO Silver House Near Mantri Square Mall",
+      "place_id": "ChIJE5Mn0yQ9rjsRD6h-ecmcfQ8",
+      "data_id": "0x3bae3d24d3279313:0xf7d9cc9797ea80f",
+      "data_cid": "1116220671798454287",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae3d24d3279313%3A0xf7d9cc9797ea80f&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae3d24d3279313%3A0xf7d9cc9797ea80f&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.978233099999999,
+        "longitude": 77.543632
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJE5Mn0yQ9rjsRD6h-ecmcfQ8",
+      "provider_id": "/g/11pvtz158q",
+      "rating": 3.1,
+      "reviews": 259,
+      "price": "$15",
+      "extracted_price": 15,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "Arghar Dasrahalli Near Madhu Hospital Opp Maharaja Tent House Reliance Smart Building, Magadi Main Rd, Bengaluru, Karnataka 560079, India",
+      "country": "India",
+      "phone": "+91 124 433 0591",
+      "website": "https://www.oyorooms.com/99884/?utm_source=Google&utm_medium=GMB",
+      "amenities": [
+        "Pool",
+        "Wi-Fi"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9SQoVQfiPjuAg5YPtVxsyoYySNsvgpF4J_xAx0FstEKBECYmXhee-vn3_1R4mCcWcQOqEpZGs9-5Q_zZBVyVoKyJNCY77r_1wbcq9_0BY9maXUf6pPP9OLALkQaMZljmYUu_zU=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/xkylnnicHcRNjoIwGADQE1VK1DE1cQEEJ_EHqQa0bBqnqUWH0upXlHpA7-BtTHyL937VzlmYBkFTDwfKGNXIDuRNmNbJ1g2E0YGygAQgCKJsf_ZkR01JT-f80kVqzHJX9uAN87sM7srORwveRz2eg0uXcZowfailRPd2yMPtSCdiL-jmmtrqFwgaU_6s4tKXZukXWcImkxsPH3_iSjiOGdHHQ3H6sXlONqto9U-P66q5aFZ0_FnMHiHGGNXfBWo_qZ5Fdg"
+    },
+    {
+      "position": 14,
+      "title": "Super Hotel O by OYO Whitefield",
+      "place_id": "ChIJuR_u_NsTrjsRJKC8X4EdScM",
+      "data_id": "0x3bae13dbfcee1fb9:0xc3491d815fbca024",
+      "data_cid": "14071810952190009380",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae13dbfcee1fb9%3A0xc3491d815fbca024&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae13dbfcee1fb9%3A0xc3491d815fbca024&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.9603108,
+        "longitude": 77.7217514
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJuR_u_NsTrjsRJKC8X4EdScM",
+      "provider_id": "/g/11rzc6xkx6",
+      "rating": 3.6,
+      "reviews": 248,
+      "price": "$18",
+      "extracted_price": 18,
+      "type": "Bed & breakfast",
+      "types": [
+        "Bed & breakfast",
+        "Hotel",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "603/B, Thubarahalli, Brookefield, Bengaluru, Karnataka 560066, India",
+      "country": "India",
+      "phone": "+91 124 433 0599",
+      "website": "https://www.oyorooms.com/184451/",
+      "amenities": [
+        "Free parking",
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Breakfast"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9Qbm5c3JEorONJvyDSdwv2kvrxr5hC4Lb_7zluKgC8TXxNehcowksX8HHKWbynblM0bQa-SiFUNRDAlw9VJoKMY_bFIYJQigUDETzGI5tRomV6_ijHihcuz9ydmkjr22ZLqMivy=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/AfNSInicHcRdDoIgAADgE5FmWdnWQ0vLNG32by8uyAGJUoAaXrAzdJu2vofv-yFKPeXUMBgZ9DDnmOW1zAXilcor1UO8NPBTAiSBNObxmWongaWNBoHHxTYOGu3u721jFY14C5sshhuYjTtWh3gxOVzecU4Qbwt5mfh-eIa6giwyYXIDe7o8xjt3zlrnFPAwSjO4XKdBQvHR9Q7dam2rHS9Po4w-fEpQ3Tn6XhYPYVnXzSuijZ61fdM0AfmPQPUDClZGvg"
+    },
+    {
+      "position": 15,
+      "title": "Super Townhouse by OYO MG Road Near Commercial Street",
+      "place_id": "ChIJAQCQsGIWrjsRqTSPK1MdMvk",
+      "data_id": "0x3bae1662b0900001:0xf9321d532b8f34a9",
+      "data_cid": "17956446907329885353",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae1662b0900001%3A0xf9321d532b8f34a9&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae1662b0900001%3A0xf9321d532b8f34a9&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.981302099999999,
+        "longitude": 77.6077273
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJAQCQsGIWrjsRqTSPK1MdMvk",
+      "provider_id": "/g/11ggw8j5_m",
+      "rating": 3.9,
+      "reviews": 806,
+      "price": "$27",
+      "extracted_price": 27,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "5, Main Guard Cross Rd, Tasker Town, Shivaji Nagar, Bengaluru, Karnataka 560001, India",
+      "country": "India",
+      "phone": "+91 124 620 1784",
+      "website": "https://www.oyorooms.com/h/20146?utm_source=Google&utm_medium=GMB",
+      "description": "Casual budget hotel with a restaurant. Straightforward rooms in an unassuming budget hotel offering a restaurant & free Wi-Fi.",
+      "amenities": [
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Wi-Fi",
+        "Kitchen"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9R5a6oeyMtO2BPXPuRp2sYjkMqB3BNZRETu8WgCa7xrtd822xB5rBKxagyCBiX7qje-MM5b-C9_hEIRogoyCo4vDnCFfK9n-So-LYgAJvhkXiWchxdTxX1oV8q3higs1tBJWd3KYQ=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/f9PIt3icHcTdboIwGADQJyq_Q2HJLmyniSDOMTPAG8NKbQHXD2hx5RF9hL2Niefi_N-F1r16te2r8C0OwK9sUmykIDWT2qLwa_NeIaqQslf7vJmjLKgWwOZUf3j4UBymrPdU2XbpgH28P2Xr4xTmnFRLM-o69DyDgxEnpuIzwU2xHFqG0jT4QSQ6i_U2Aw4zgZfbuySbSxJJ9AVoV_JVfBNd0eRUmPpoChe-w8EXDVeuxnFe-0n5-fbnOo6DxHOK5APqz0VV"
+    },
+    {
+      "position": 16,
+      "title": "OYO The Purple Orchid Stay",
+      "place_id": "ChIJD0ufXlYTrjsRSX89AhcJFJI",
+      "data_id": "0x3bae13565e9f4b0f:0x92140917023d7f49",
+      "data_cid": "10526048223498174281",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae13565e9f4b0f%3A0x92140917023d7f49&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae13565e9f4b0f%3A0x92140917023d7f49&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.946041399999999,
+        "longitude": 77.7025199
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJD0ufXlYTrjsRSX89AhcJFJI",
+      "provider_id": "/g/11h91lj13c",
+      "rating": 2,
+      "reviews": 539,
+      "price": "$9",
+      "extracted_price": 9,
+      "type": "Homestay",
+      "types": [
+        "Homestay"
+      ],
+      "address": "197, Rainbow Layout, Munnekolala, Bengaluru, Karnataka 560037, India",
+      "country": "India",
+      "website": "https://www.oyorooms.com/209764/?utm_source=Google&utm_medium=GMB",
+      "description": "Simple hotel with breakfast & Wi-Fi. Pared-back rooms in a straightforward hotel offering Wi-Fi, parking & breakfast.",
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9QoGh8Rcxz8JVSXUTF6gyslOQ1yaHhkktWc3DoI3OHthM78eLybIhWNi0PQCtPTkg2L1pwRCOdjwPzkXm1ArSGRb_VK4MTvIU8vwpwtMKZud39sXLo6l4OQtzlXjI-WEoMgR1s=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/qqmecXicHcRLDoIwFADAExWoGAQTF8YPoiAfQYgbI5W0SqHEPq1wQO_gbUycxXw_DKCTU13nzNSoEJRXT1k9iGihakEjotFpJxGRSOrzfX7rnVi4zE7Ie7C3x0ORpWuL9pKHMe4vG1bXkBNzKTwz3AALJnbl96XH8v3NiOIFRGlNRz7uVLIIr3cVDXXR4Pnj4Cbl-bgbB-nLy-yX6hQEu9Pzajqy8IXFx2EMAy_uHspXIqAJljOFDcNA7D9B7Q9x_kVC"
+    },
+    {
+      "position": 17,
+      "title": "Townhouse by OYO Ramamurthy Nagar Formerly Navya International",
+      "place_id": "ChIJVZYmasYRrjsRlrWYWd4tK_0",
+      "data_id": "0x3bae11c66a269655:0xfd2b2dde5998b596",
+      "data_cid": "18242725148603495830",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae11c66a269655%3A0xfd2b2dde5998b596&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae11c66a269655%3A0xfd2b2dde5998b596&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 13.0068951,
+        "longitude": 77.6668092
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJVZYmasYRrjsRlrWYWd4tK_0",
+      "provider_id": "/g/11k60l2cz3",
+      "rating": 3.3,
+      "reviews": 1090,
+      "price": "$10",
+      "extracted_price": 10,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "Byanna Industrial Garden, New Extension Hotel, 8/2, Vijinapura, Dooravani Nagar, Bengaluru, Karnataka 560016, India",
+      "country": "India",
+      "phone": "+91 124 433 0599",
+      "website": "https://www.oyorooms.com/104480/",
+      "description": "Down-to-earth hotel with Wi-Fi. Functional, air-conditioned rooms in a utilitarian hotel offering Wi-Fi & breakfast.",
+      "amenities": [
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Wi-Fi",
+        "Kitchen"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9TEUVoRYy0yY2UtGswOYJ179nSWK5V4KPx5B18WmQrSS0IYTcf7lTFZTYrm4ptqKQT05POw6ug6CUVaTwWnFXno5oa5LNEvZvyPTTACL-FPpsEGUqR7O2GLgJ7S49HhwmjT3Oiy=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/f52caHicHcRRboIwGADgE1WKUhlLfHAGcEIE5QdW30yDxQVapIWuJ9wZvI2J38P3_G-1HtSn43TtasGl5F0zqWZkUuhG6AWTvcMHhZhCytke67sNICwreaYWW7osdaxMRg-uH4iiTkjlJfkf-XI_6v40FgX-psBufgfRBejYe4N-JCfAJM_MeuLrXVldwdQi-hGSyCtJj-F8mW0OsN2lKMoHFcbl4-xnyzjlB7_wgn1r-l9YZXe7MS7GGLXvGRIvD41DnA"
+    },
+    {
+      "position": 18,
+      "title": "Hotel O by OYO Bangalore Near Reva Circle Formerly CKA Boarding",
+      "place_id": "ChIJi11NYpUZrjsRr9JhFUDFJLk",
+      "data_id": "0x3bae1995624d5d8b:0xb924c5401561d2af",
+      "data_cid": "13341004875205563055",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae1995624d5d8b%3A0xb924c5401561d2af&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae1995624d5d8b%3A0xb924c5401561d2af&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 13.1215009,
+        "longitude": 77.6311826
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJi11NYpUZrjsRr9JhFUDFJLk",
+      "provider_id": "/g/11twjgxq84",
+      "rating": 4.1,
+      "reviews": 118,
+      "price": "$13",
+      "extracted_price": 13,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Villa"
+      ],
+      "address": "Plot Number 19/2, Sri Sai Layout, Bellahalli Main Road, Kattigenahalli, Bengaluru, Karnataka 560064, India",
+      "country": "India",
+      "phone": "+91 124 433 0599",
+      "website": "https://www.oyorooms.com/201925/?utm_source=Google&utm_medium=GMB",
+      "amenities": [
+        "Pool",
+        "Free Wi-Fi",
+        "Air-conditioned",
+        "Breakfast"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-proxy/ALd4DhHMcvRBqJaT7HJukKUZ-1f_95oPctpp10YyeDhYPqsyJszMjJmIvTocJ555dW0TMP5CkPSSwSZJfg554WRDuzmNCF9LJObYXnKDceqUUntNMgBbJta2Z3--pQ_cphV-oFVwbsAdAkzd_e66Os5Blet7YVmlV07nVr1WZppVlDPaI7uFjhmY-yzBRw=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/xggTkXicHcTNboIwAADgJ6rAtBKX7AASolWU8Tu4ECiVRqAttMjgTfcqOy3Zd_h-fqlSQr5rWke3m4bzpiOTJCPmTBGmNpj3WiMkECP_XjTrWu8cevLwK7AHVEbmCU3tJc6B8SgOkPtYCWHo2UIcmvmDXJBcvSfqz6-IYwQhrFM98nx4bP0wnMMcPRoId2ngTGt_O7qHK7pX2Re7OJgMcczUzWvsCqnyLd8CID4LLGgCuJvMlbRqq13rguz3dwntjigzS_ou0U2WjEaaC5F0jl-ezcl90j4Dy2oH88ds6LoO6P8YsD-k2lbp"
+    },
+    {
+      "position": 19,
+      "title": "Spot on by OYO S L V Comfort",
+      "place_id": "ChIJSz_2L3s9rjsRWV-xzq6RpDI",
+      "data_id": "0x3bae3d7b2ff63f4b:0x32a491aeceb15f59",
+      "data_cid": "3649201778055012185",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae3d7b2ff63f4b%3A0x32a491aeceb15f59&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae3d7b2ff63f4b%3A0x32a491aeceb15f59&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 13.0211095,
+        "longitude": 77.5539867
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJSz_2L3s9rjsRWV-xzq6RpDI",
+      "provider_id": "/g/1tjff8nw",
+      "rating": 2.8,
+      "reviews": 157,
+      "price": "$8",
+      "extracted_price": 8,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "39/2 Shree Mansion, S C Road, Bazaar St, Rajarajeshwari Nagar, Zone North, Yeswanthpur, Bengaluru, Karnataka 560022, India",
+      "country": "India",
+      "phone": "+91 124 433 0591",
+      "website": "https://www.oyorooms.com/112096/?utm_source=Google&utm_medium=GMB",
+      "description": "Modest budget hotel with parking & meals. Humble budget hotel, for Indian nationals only, offering pared-back rooms, meals & parking.",
+      "amenities": [
+        "Wi-Fi",
+        "Parking"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9T18cLZnULGBZx-_CpRdzeyLOQt9ovYjnMwOcF6bIvWJynOen-zFo4o1UnifqHlrNQU_bG1nuMw_LVDU08_qIj21nlOCbZafpw-MBDT10uumvAZ9j71NTT3aJpMZXaaxeiJgDQpxQ=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/LA5ca3icHcRJDoIwFADQE1VaNSomLkTiQBiCAYduCNTKEPyttkze0CN4GxPf4n0_hdZSLQ2jLiajXIi85o3iLyZAc9AjJh5GLhViCilj7Z_LwYzIgrkUYndn0R4lG3m8vfngBqE2RXutwOsCtp1lh_bsDBBwQO-tmAoSQ3l_7uuXH8ZJtiPQeF3inuwYL5LnoRoTqINNRtO77JBn2RHBTfNo19Ss5sSPoknqSI9e0rTnpZPboezDVUcwxqj4zxD8AFdmRk8"
+    },
+    {
+      "position": 20,
+      "title": "Hotel O by OYO Shree AMM Residency",
+      "place_id": "ChIJrWSjhcYVrjsR5dRHlTeIJGI",
+      "data_id": "0x3bae15c685a364ad:0x622488379547d4e5",
+      "data_cid": "7071927087187612901",
+      "reviews_link": "https://serpapi.com/search.json?data_id=0x3bae15c685a364ad%3A0x622488379547d4e5&engine=google_maps_reviews&hl=en",
+      "photos_link": "https://serpapi.com/search.json?data_id=0x3bae15c685a364ad%3A0x622488379547d4e5&engine=google_maps_photos&hl=en",
+      "gps_coordinates": {
+        "latitude": 12.9493128,
+        "longitude": 77.59290349999999
+      },
+      "place_id_search": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&place_id=ChIJrWSjhcYVrjsR5dRHlTeIJGI",
+      "provider_id": "/g/1tf9lpz2",
+      "rating": 3.7,
+      "reviews": 963,
+      "price": "$9",
+      "extracted_price": 9,
+      "type": "Hotel",
+      "types": [
+        "Hotel",
+        "Bed & breakfast",
+        "Guest house",
+        "Holiday home",
+        "Inn",
+        "Lodge",
+        "Motel",
+        "Serviced apartment",
+        "Villa"
+      ],
+      "address": "2&2/1, Dr.Marigowda Road, Lalbagh, Wilson garden, Mavalli, Bengaluru, Karnataka 560027, India",
+      "country": "India",
+      "phone": "+91 124 433 0591",
+      "website": "https://www.oyorooms.com/41318/",
+      "description": "Functional hotel with free Wi-Fi. Straightforward rooms in a down-to-earth hotel offering complimentary Wi-Fi access.",
+      "amenities": [
+        "Air-conditioned",
+        "Breakfast",
+        "Wi-Fi",
+        "Parking"
+      ],
+      "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/ANWiy9SObF0wVC17VeXCq1CmxSlm5-Zgzkk-ZN0cXMTZeWVUdYki2gpGfnJwLMMHXHT5tJqoY2xmf6eE9nDYXrjerj3d9a5rw0Auh6EHnkE2suagwhCChxu6KQSigxOZbbfWEHFHyHqi=w1000-h1000-c-n",
+      "serpapi_thumbnail": "https://serpapi.com/images/url/1BKxN3icHcRdDoIgAADgE5Fo02ZbD40sVllrln9vSQimggoO64Kdodu09T183w_XulNLy2r4fMakZA0dFR2IFJoKPSOytVinAFFAWetTUr386FxsoYmRvYhpinobtVPUtC7I2buuQX6CJA2vOU3i2yOrK4d1u1LszTEMcYqvrt73MnOmtvRo4ItNlg5POjznD__uDgauR-4FWNSBo8Y7MxwhPo3e4RJVbDrnRVEmAd7iF-6rlbEhhID_J0D8AIb-RZs"
+    }
+  ],
+  "serpapi_pagination": {
+    "next": "https://serpapi.com/search.json?engine=google_maps&google_domain=google.com&hl=en&q=OYO%2C+Bangalore&start=20&type=search"
+  },
+  "_cached_at": "2026-09-30T17:01:08+00:00"
+}

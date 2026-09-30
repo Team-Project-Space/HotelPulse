@@ -1,21 +1,30 @@
 """SQLite connection handling.
 
-The database is a local cache and analysis store, so the connection is opened
-per operation rather than held globally. That keeps Streamlit's script reruns
-safe: each rerun gets a clean connection and cannot trip over a stale handle.
+Streamlit runs script reruns and button callbacks on different threads, so a
+single process-wide connection (old `@lru_cache` design) raises:
+
+    sqlite3.ProgrammingError: SQLite objects created in a thread can only be
+    used in that same thread.
+
+Fix: one connection per thread (`threading.local`), plus
+`check_same_thread=False` as a safety net if a handle is ever passed across
+threads. Writers still go through `db_session()`, which opens a short-lived
+connection and commits/rolls back explicitly.
 """
 
 from __future__ import annotations
 
 import sqlite3
+import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
-from functools import lru_cache
 from pathlib import Path
 
 from hotelpulse.config import get_settings
 
 SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
+
+_thread_local = threading.local()
 
 
 def _connect(db_path: Path) -> sqlite3.Connection:
@@ -25,6 +34,9 @@ def _connect(db_path: Path) -> sqlite3.Connection:
         # Rows behave like dicts; sqlite3.Row also supports index access.
         detect_types=0,
         timeout=30.0,
+        # Streamlit may hand a handle to another thread; WAL makes this safe
+        # enough for reads, and writes use their own db_session connections.
+        check_same_thread=False,
     )
     conn.row_factory = sqlite3.Row
     # Off by default in SQLite, and the reviews/mentions foreign keys depend on it.
@@ -33,25 +45,37 @@ def _connect(db_path: Path) -> sqlite3.Connection:
     return conn
 
 
-@lru_cache(maxsize=1)
 def get_conn() -> sqlite3.Connection:
-    """Return a shared connection to the configured database.
+    """Return this thread's connection to the configured database.
 
-    For library code prefer `db_session()`, which is re-entrant and closes
-    cleanly. This exists for the read-heavy helpers in repo.py and for
-    `init_db()`.
+    Prefer `db_session()` on write paths — it opens, commits, and closes.
+    This exists for the read-heavy helpers in repo.py and for `init_db()`.
     """
-    return _connect(get_settings().db_path)
+    db_path = get_settings().db_path
+    conn = getattr(_thread_local, "conn", None)
+    cached_path = getattr(_thread_local, "db_path", None)
+    if conn is None or cached_path != db_path:
+        if conn is not None:
+            try:
+                conn.close()
+            except sqlite3.Error:
+                pass
+        conn = _connect(db_path)
+        _thread_local.conn = conn
+        _thread_local.db_path = db_path
+    return conn
 
 
 def reset_conn() -> None:
-    """Drop the cached connection. Call after changing DB_PATH (e.g. in tests)."""
-    if get_conn.cache_info().currsize:
+    """Close this thread's cached connection (e.g. after changing DB_PATH)."""
+    conn = getattr(_thread_local, "conn", None)
+    if conn is not None:
         try:
-            get_conn().close()
+            conn.close()
         except sqlite3.Error:
             pass
-    get_conn.cache_clear()
+    _thread_local.conn = None
+    _thread_local.db_path = None
 
 
 @contextmanager

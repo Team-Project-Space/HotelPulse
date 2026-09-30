@@ -53,11 +53,16 @@ class Settings:
     def __init__(self) -> None:
         # --- API keys -------------------------------------------------
         self.serpapi_api_key: str = _env_str("SERPAPI_API_KEY")
-        self.anthropic_api_key: str = _env_str("ANTHROPIC_API_KEY")
+        # Free LLM providers. Gemini is preferred when both keys are present;
+        # set LLM_PROVIDER=gemini|groq to force one.
+        self.gemini_api_key: str = _env_str("GEMINI_API_KEY")
+        self.groq_api_key: str = _env_str("GROQ_API_KEY")
+        self.llm_provider_override: str = _env_str("LLM_PROVIDER").lower()
 
         # --- Models ---------------------------------------------------
-        self.tag_model: str = _env_str("TAG_MODEL", "claude-haiku-4-5-20251001")
-        self.write_model: str = _env_str("WRITE_MODEL", "claude-sonnet-5-5")
+        # Defaults track the free providers (Gemini Flash / Groq Llama).
+        self.tag_model: str = _env_str("TAG_MODEL", "gemini-3.1-flash-lite")
+        self.write_model: str = _env_str("WRITE_MODEL", "gemini-3.1-flash-lite")
 
         # --- Storage --------------------------------------------------
         db_path = _env_str("DB_PATH", "data/hotelpulse.db")
@@ -96,8 +101,22 @@ class Settings:
         return bool(self.serpapi_api_key)
 
     @property
+    def gemini_configured(self) -> bool:
+        return bool(self.gemini_api_key)
+
+    @property
+    def groq_configured(self) -> bool:
+        return bool(self.groq_api_key)
+
+    @property
+    def llm_configured(self) -> bool:
+        """True when at least one free LLM key is present."""
+        return bool(self.gemini_api_key or self.groq_api_key)
+
+    @property
     def anthropic_configured(self) -> bool:
-        return bool(self.anthropic_api_key)
+        """Deprecated alias — Anthropic is no longer used. Kept for old callers."""
+        return False
 
 
 @lru_cache(maxsize=1)

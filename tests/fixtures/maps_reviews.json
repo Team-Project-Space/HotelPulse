@@ -1,0 +1,231 @@
+{
+  "search_metadata": {
+    "id": "6abd40535b92f806486c4348",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/haWgU6wEiLNO8T_zMpw1rpJuY7Vel8f-hrZBxLYWdao/6abd40535b92f806486c4348.json",
+    "markdown_endpoint": "https://serpapi.com/searches/haWgU6wEiLNO8T_zMpw1rpJuY7Vel8f-hrZBxLYWdao/6abd40535b92f806486c4348.md",
+    "created_at": "2026-09-30 17:01:07 UTC",
+    "processed_at": "2026-09-30 17:01:07 UTC",
+    "google_maps_reviews_url": "https://www.google.com/maps/place/data=!4m7!3m6!1s0x3bae1904729f6f95:0xe59ddd111270c2c8!5m2!4m1!1i2!9m1!1b1?hl=en",
+    "raw_html_file": "https://serpapi.com/searches/haWgU6wEiLNO8T_zMpw1rpJuY7Vel8f-hrZBxLYWdao/6abd40535b92f806486c4348.html",
+    "prettify_html_file": "https://serpapi.com/searches/haWgU6wEiLNO8T_zMpw1rpJuY7Vel8f-hrZBxLYWdao/6abd40535b92f806486c4348.prettify",
+    "total_time_taken": 1.06
+  },
+  "search_parameters": {
+    "engine": "google_maps_reviews",
+    "data_id": "0x3bae1904729f6f95:0xe59ddd111270c2c8",
+    "hl": "en",
+    "sort_by": "newestFirst"
+  },
+  "place_info": {
+    "title": "Hotel O by OYO Manyata Stay Inn",
+    "address": "Sri Sai pickle shop, NA, Manyata Gate 5, Rachenahalli Main Road, 3rd Cross Rd, P&t LayoutBeside, Bengaluru, Karnataka 560077, India",
+    "rating": 4.6,
+    "reviews": 992,
+    "type": "Hotel"
+  },
+  "topics": [
+    {
+      "keyword": "budget friendly",
+      "mentions": 61,
+      "id": "CGy71hNc3AE"
+    },
+    {
+      "keyword": "couple friendly",
+      "mentions": 9,
+      "id": "BPXzuhOGtLc"
+    },
+    {
+      "keyword": "hassle free check in",
+      "mentions": 2,
+      "id": "OMMHlhtdwTQ"
+    },
+    {
+      "keyword": "spacious rooms",
+      "mentions": 22,
+      "id": "COtPhJPciNw"
+    },
+    {
+      "keyword": "tidy room",
+      "mentions": 2,
+      "id": "OGturfNOp2w"
+    },
+    {
+      "keyword": "polite staff",
+      "mentions": 24,
+      "id": "B30PdHtYgDQ"
+    },
+    {
+      "keyword": "well maintained",
+      "mentions": 5,
+      "id": "HOX_tJetjDY"
+    },
+    {
+      "keyword": "key card access",
+      "mentions": 4,
+      "id": "GAMACzKNmYI"
+    },
+    {
+      "keyword": "neat rooms",
+      "mentions": 5,
+      "id": "Kv-KrZPExsw"
+    },
+    {
+      "keyword": "smart television",
+      "mentions": 4,
+      "id": "dMO-vv3vdGQ"
+    }
+  ],
+  "reviews": [
+    {
+      "position": 1,
+      "link": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pZMlYzTmFUM3B0T1hwU2NWTnNkRWhzVUhsamVrRRAB!2m1!1s0x0:0xe59ddd111270c2c8!3m1!1s2@1:CAIQACodChtycF9oOjY2V3NaT3ptOXpScVNsdEhsUHljekE%7C%7C?hl=en-US",
+      "rating": 1.0,
+      "date": "4 weeks ago",
+      "iso_date": "2026-09-02T12:26:27Z",
+      "iso_date_of_last_edit": "2026-09-02T12:26:27Z",
+      "source": "Google",
+      "review_id": "Ci9DQUlRQUNvZENodHljRjlvT2pZMlYzTmFUM3B0T1hwU2NWTnNkRWhzVUhsamVrRRAB",
+      "user": {
+        "name": "sadiq muhammed",
+        "link": "https://www.google.com/maps/contrib/117546546100792307161?hl=en-US",
+        "contributor_id": "117546546100792307161",
+        "thumbnail": "https://lh3.googleusercontent.com/a/ACg8ocID8XUjieLWB-ooK1LkfTmSYPphF2tgmV7fGMjGU7FHOp7T_Q=s120-c-rp-mo-ba12-br100",
+        "local_guide": true,
+        "reviews": 30,
+        "photos": 118
+      },
+      "snippet": "The north Indian staff's behaviour is very rude here , better to terminate or train them.\nಜೈ ಕರ್ನಾಟಕ",
+      "extracted_snippet": {
+        "original": "The north Indian staff's behaviour is very rude here , better to terminate or train them.\nಜೈ ಕರ್ನಾಟಕ"
+      },
+      "details": {
+        "rooms": 3,
+        "service": 1,
+        "location": 3
+      },
+      "likes": 0
+    },
+    {
+      "position": 2,
+      "link": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2toclJUWkxaMGcxT1hoUlNqbGFWekp5T1VwUWRuYxAB!2m1!1s0x0:0xe59ddd111270c2c8!3m1!1s2@1:CAIQACodChtycF9oOkhrRTZLZ0g1OXhRSjlaVzJyOUpQdnc%7C%7C?hl=en-US",
+      "rating": 1.0,
+      "date": "a month ago",
+      "iso_date": "2026-08-21T06:43:39Z",
+      "iso_date_of_last_edit": "2026-08-21T06:43:39Z",
+      "source": "Google",
+      "review_id": "Ci9DQUlRQUNvZENodHljRjlvT2toclJUWkxaMGcxT1hoUlNqbGFWekp5T1VwUWRuYxAB",
+      "user": {
+        "name": "Loyalakpa Kshetrimayum",
+        "link": "https://www.google.com/maps/contrib/109839210844914480297?hl=en-US",
+        "contributor_id": "109839210844914480297",
+        "thumbnail": "https://lh3.googleusercontent.com/a-/ALV-UjUoEzk-oIWEb5OEigePZSpJCuFuE_lNUxpwlafM1plp2bREHLzm=s120-c-rp-mo-ba12-br100",
+        "local_guide": true,
+        "reviews": 11,
+        "photos": 14
+      },
+      "details": {
+        "trip_type": "Vacation"
+      },
+      "likes": 0
+    },
+    {
+      "position": 3,
+      "link": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xwNExUaHdjSFZWYmtGdWFqRjNTR3MxWVRCS2VuYxAB!2m1!1s0x0:0xe59ddd111270c2c8!3m1!1s2@1:CAIQACodChtycF9oOlp4LThwcHVVbkFuajF3SGs1YTBKenc%7C%7C?hl=en-US",
+      "rating": 2.0,
+      "date": "a month ago",
+      "iso_date": "2026-08-11T02:18:30Z",
+      "iso_date_of_last_edit": "2026-08-11T02:18:30Z",
+      "source": "Google",
+      "review_id": "Ci9DQUlRQUNvZENodHljRjlvT2xwNExUaHdjSFZWYmtGdWFqRjNTR3MxWVRCS2VuYxAB",
+      "user": {
+        "name": "Aman pratap Singh",
+        "link": "https://www.google.com/maps/contrib/111664926322080883536?hl=en-US",
+        "contributor_id": "111664926322080883536",
+        "thumbnail": "https://lh3.googleusercontent.com/a/ACg8ocIfN9_INUmQn_EF50wm49NUc8ES4nXl6HYmIg_Pqo4AUPVJzJQ=s120-c-rp-mo-ba12-br100",
+        "local_guide": true,
+        "reviews": 11,
+        "photos": 4
+      },
+      "details": {
+        "rooms": 2,
+        "service": 2,
+        "location": 2
+      },
+      "likes": 0
+    },
+    {
+      "position": 4,
+      "link": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pCcGFFWTBUWHBGVEZnMVptbFROVVp3VjFKelpIYxAB!2m1!1s0x0:0xe59ddd111270c2c8!3m1!1s2@1:CAIQACodChtycF9oOjBpaEY0TXpFTFg1ZmlTNUZwV1JzZHc%7C%7C?hl=en-US",
+      "rating": 2.0,
+      "date": "2 months ago",
+      "iso_date": "2026-07-29T12:36:14Z",
+      "iso_date_of_last_edit": "2026-07-29T12:36:14Z",
+      "images": [
+        "https://lh3.googleusercontent.com/grass-cs/ACvplmMPM-0eyhIP7A-dCLw0kyAsCzmw_43g-XEtTI_Gw5p7hZtSTPMlrWZJUfaDxhkEIdNo4HcBu8POiTJnz8MUFulO0GK7ni_0iiznvArYsvtwvQNJxwHdhnJmDTUy9TooZIEA0GPevGXS_UTl=k-no"
+      ],
+      "source": "Google",
+      "review_id": "Ci9DQUlRQUNvZENodHljRjlvT2pCcGFFWTBUWHBGVEZnMVptbFROVVp3VjFKelpIYxAB",
+      "user": {
+        "name": "Samantha Karkera",
+        "link": "https://www.google.com/maps/contrib/113006081133212916059?hl=en-US",
+        "contributor_id": "113006081133212916059",
+        "thumbnail": "https://lh3.googleusercontent.com/a-/ALV-UjWKCg2CpKc1OvFYvgxmeLJBlRp-VBauIPBgVssxyOUIqo4Nwfg=s120-c-rp-mo-ba12-br100",
+        "local_guide": true,
+        "reviews": 127,
+        "photos": 613
+      },
+      "snippet": "Super O Manyata Hotel is also called Felix Otium and Rithanya Suites. It is not the place given online but is opposite. The place is used throughout the day by young couples and the rooms are not cleaned after nor bedsheets changed. There are cockroaches in the bathrooms. Our room had coffee stains all down one wall and writing in lipstick all around the mirror. The staffs response to my request to spray the bathroom for roaces was to offer phenol or air freshener. Only after arguing did they get a bottle of Hit. Then the room boy started using it like room freshner, at which point I took it from him and sprayed the doorway, behind the toilet and washbasin myself, which erupted with tiny roaches. The older man in reception during the day is polite but all the other staff were extremely rude and made fun of me in Hindi thinking I don't understand.Not a good stay.",
+      "extracted_snippet": {
+        "original": "Super O Manyata Hotel is also called Felix Otium and Rithanya Suites. It is not the place given online but is opposite. The place is used throughout the day by young couples and the rooms are not cleaned after nor bedsheets changed. There are cockroaches in the bathrooms. Our room had coffee stains all down one wall and writing in lipstick all around the mirror. The staffs response to my request to spray the bathroom for roaces was to offer phenol or air freshener. Only after arguing did they get a bottle of Hit. Then the room boy started using it like room freshner, at which point I took it from him and sprayed the doorway, behind the toilet and washbasin myself, which erupted with tiny roaches. The older man in reception during the day is polite but all the other staff were extremely rude and made fun of me in Hindi thinking I don't understand.Not a good stay."
+      },
+      "details": {
+        "trip_type": "Vacation",
+        "travel_group": "Family",
+        "rooms": 2,
+        "service": 1,
+        "location": 3
+      },
+      "likes": 0
+    },
+    {
+      "position": 5,
+      "link": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pnMFJWWk5VMU5vYm05eVExODNRMmxGUzFSSlVXYxAB!2m1!1s0x0:0xe59ddd111270c2c8!3m1!1s2@1:CAIQACodChtycF9oOjg0RVZNU1Nobm9yQ183Q2lFS1RJUWc%7C%7C?hl=en-US",
+      "rating": 5.0,
+      "date": "2 months ago",
+      "iso_date": "2026-07-26T17:42:22Z",
+      "iso_date_of_last_edit": "2026-07-26T17:42:22Z",
+      "source": "Google",
+      "review_id": "Ci9DQUlRQUNvZENodHljRjlvT2pnMFJWWk5VMU5vYm05eVExODNRMmxGUzFSSlVXYxAB",
+      "user": {
+        "name": "Neelanjan dutta choudhury",
+        "link": "https://www.google.com/maps/contrib/107446773135411896374?hl=en-US",
+        "contributor_id": "107446773135411896374",
+        "thumbnail": "https://lh3.googleusercontent.com/a-/ALV-UjVndqAF2wKbKWAWUE_SJpj0wf_1eyPmUvAnaWLG4gYUXmN_4O1k=s120-c-rp-mo-ba12-br100",
+        "local_guide": true,
+        "reviews": 42,
+        "photos": 29
+      },
+      "snippet": "Excellent accommodation at such a reasonable rate. Hotel staff are wonderful. Location and environment is very good. Recommended for safe and peaceful stay. I would prefer to stay in this hotel whenever visit Bengaluru.",
+      "extracted_snippet": {
+        "original": "Excellent accommodation at such a reasonable rate. Hotel staff are wonderful. Location and environment is very good. Recommended for safe and peaceful stay. I would prefer to stay in this hotel whenever visit Bengaluru."
+      },
+      "details": {
+        "trip_type": "Business",
+        "travel_group": "Family",
+        "rooms": "Very clean and tidy",
+        "service": 4,
+        "location": 5,
+        "safety": "Very much safe",
+        "food_drinks": "No food are served. But excellent food are available nearby.",
+        "hotel_highlights": "Quiet, Great value"
+      },
+      "likes": 0
+    }
+  ],
+  "serpapi_pagination": {
+    "next": "https://serpapi.com/search.json?data_id=0x3bae1904729f6f95%3A0xe59ddd111270c2c8&engine=google_maps_reviews&hl=en&next_page_token=CjEIARIpCgoAP72GFjkboW__EhDy5NuOaqTfqu4Te6EAAAAAGgn922MCYWORuhYYACIA&sort_by=newestFirst",
+    "next_page_token": "CjEIARIpCgoAP72GFjkboW__EhDy5NuOaqTfqu4Te6EAAAAAGgn922MCYWORuhYYACIA"
+  },
+  "_cached_at": "2026-09-30T17:01:09+00:00"
+}

@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "review_id": "fixture-review-1",
+      "mentions": [
+        {
+          "topic": "wifi",
+          "sentiment": "negative",
+          "severity": 2,
+          "quote": "The wifi in the room was very slow",
+          "quote_en": "The wifi in the room was very slow"
+        },
+        {
+          "topic": "staff",
+          "sentiment": "positive",
+          "severity": 1,
+          "quote": "Staff were helpful",
+          "quote_en": "Staff were helpful"
+        },
+        {
+          "topic": "food",
+          "sentiment": "negative",
+          "severity": 3,
+          "quote": "dinner buffet was cold and tasteless",
+          "quote_en": "dinner buffet was cold and tasteless"
+        }
+      ]
+    }
+  ]
+}

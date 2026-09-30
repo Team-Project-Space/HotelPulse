@@ -7,7 +7,7 @@ suite run offline with no API key (PRD section 17).
 |---|---|---|
 | `maps_search.json` | `engine=google_maps`, `type=search` | `test_normalize.py::test_maps_search_fixture_normalizes` |
 | `maps_reviews.json` | `engine=google_maps_reviews`, one page | `test_normalize.py::test_maps_reviews_fixture_normalizes` |
-| `llm_tag_response.json` | Claude Haiku tagger output | `test_tagger.py` (Phase 2) |
+| `llm_tag_response.json` | Free LLM tagger output (Gemini/Groq shape) | `test_tagger.py` (Phase 2) |
 
 The two Maps tests **skip** until the files exist, so the suite passes before
 the first capture. Everything else is covered by inline payloads shaped like

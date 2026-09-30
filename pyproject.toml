@@ -11,7 +11,8 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "tenacity>=8.2.0",
     "serpapi>=0.1.5",
-    "anthropic>=0.30.0",
+    "google-genai>=1.0.0",
+    "groq>=0.15.0",
 ]
 
 [project.optional-dependencies]

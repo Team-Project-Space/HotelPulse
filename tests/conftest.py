@@ -29,7 +29,10 @@ def temp_db(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Path]:
     db_file = tmp_path / "hotelpulse_test.db"
     monkeypatch.setenv("DB_PATH", str(db_file))
     monkeypatch.setenv("SERPAPI_API_KEY", "test-key-not-real")
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key-not-real")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key-not-real")
+    monkeypatch.setenv("GROQ_API_KEY", "")
+    monkeypatch.setenv("LLM_PROVIDER", "")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
     monkeypatch.setenv("SERP_MONTHLY_BUDGET", "250")
 
     reset_settings_cache()

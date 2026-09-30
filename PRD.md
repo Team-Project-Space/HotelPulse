@@ -76,7 +76,7 @@ All sources map to one `Review` model (section 9).
 - `quote` must be a **verbatim substring** of the review text (short, under 200 chars). Validate in code; drop or repair mentions whose quote is not a substring.
 - Reviews in Hinglish or regional languages: tag normally; `quote` stays in the original language; also return `quote_en` (English translation) for display.
 - Batch 10-15 reviews per LLM call. JSON-only output. Retry once on parse failure. Cache tag results per `review_id + prompt_version`.
-- Model: Claude Haiku for tagging (configurable via env).
+- Model: free LLM — Google Gemini Flash preferred (`TAG_MODEL`, default `gemini-3.1-flash-lite`), Groq Llama fallback via `GROQ_API_KEY`.
 
 ### 6.4 Fix-first ranking (Must)
 See section 11 for formulas. Output top 3 issues and top 3 strengths.
@@ -116,7 +116,7 @@ Layers: `serp/` (data in) -> `db/` (storage) -> `analysis/` (LLM + ranking) -> `
 
 - Python 3.11+
 - `serpapi` (official client) for SerpApi
-- `anthropic` SDK. Models via env: `TAG_MODEL` (default `claude-haiku-4-5-20251001`), `WRITE_MODEL` (default `claude-sonnet-5-5`)
+- Free LLM providers (no credit card): **Google Gemini** (`google-genai`, default model `gemini-3.1-flash-lite`) preferred; **Groq** (`groq`, e.g. Llama 3.3 70B) fallback. Configure via `GEMINI_API_KEY` and/or `GROQ_API_KEY` in env. Optional `LLM_PROVIDER=gemini|groq` forces one when both keys exist.
 - SQLite (stdlib `sqlite3`)
 - Pydantic v2 for models and LLM output validation
 - Streamlit + Plotly
@@ -377,9 +377,11 @@ Entry point: `streamlit run src/hotelpulse/app/streamlit_app.py`.
 `.env.example`:
 ```
 SERPAPI_API_KEY=
-ANTHROPIC_API_KEY=
-TAG_MODEL=claude-haiku-4-5-20251001
-WRITE_MODEL=claude-sonnet-5-5
+GEMINI_API_KEY=
+GROQ_API_KEY=
+# LLM_PROVIDER=gemini   # optional force when both keys exist
+TAG_MODEL=gemini-3.1-flash-lite
+WRITE_MODEL=gemini-3.1-flash-lite
 DB_PATH=data/hotelpulse.db
 MAX_REVIEWS_OWN=100
 MAX_REVIEWS_COMPETITOR=40
@@ -440,7 +442,7 @@ Check each box only when its tests pass.
 
 ## 17. Testing and evaluation
 
-- `pytest` must pass without network access and without API keys (all SerpApi and Anthropic calls mocked or fixture-based).
+- `pytest` must pass without network access and without API keys (all SerpApi and LLM calls mocked or fixture-based).
 - Required tests: normalization of raw SerpApi JSON, cache hit avoids API call, tagger rejects non-verbatim quotes, score/ranking math, competitor gap sign and Unique/Common flag.
 - **Eval:** `eval/run_eval.py` runs the real tagger over `labeled_reviews.jsonl` and reports (a) topic detection precision/recall/F1, (b) sentiment accuracy on correctly detected topics. Paste results into README. Report honestly, do not tune numbers.
 
