@@ -83,6 +83,8 @@ The UI is styled to match all three design mockups and runs, but **nothing is wi
    - Python client: `serpapi.Client(api_key=...)`, `client.search({...})` returns a `SerpResults` (a `UserDict` subclass, so `results["reviews"]` and `.get(...)` both work).
    - **Free plan is 250/month *and* 50/hour.** You will hit the hourly cap long before the monthly one when bursting. Do not set `no_cache=true` — SerpApi's own 1-hour cache is free and does not count against quota.
    - Credit math at the chosen conservative caps (`MAX_REVIEWS_OWN=30`, `MAX_REVIEWS_COMPETITOR=10`): ~4 credits own + ~2 per competitor × 4 = **~12 credits per full run, so ~20 runs/month.**
+7. **Credit accounting uses an append-only ledger, not `api_cache`.** There is a bug already fixed here — do not "simplify" it back. `api_cache` holds one row per *unique query* and upserts on refresh, so counting its rows reported **1 credit for 5 refreshes of the same query**, and the 250/month guard leaked silently. The `api_calls` table only ever appends, so `repo.api_calls_this_month()` equals credits actually spent. Two tests pin this: `test_refresh_spends_another_credit` and `test_cached_row_count_is_not_a_credit_count`.
+8. **`api_calls_this_month()` only guards cache misses.** That is correct — a cached response costs nothing, so a fully-cached app keeps working after the quota is exhausted. This is also why `test_cached_data_still_works_after_the_cap_is_hit` passes.
 
 ---
 
@@ -109,53 +111,30 @@ Health check without a browser: `py -m streamlit run ... --server.headless true 
 
 The UI is ready. Next is implementing the backend according to Section 16 of [`PRD.md`](./PRD.md).
 
-**Progress against PRD §16:** Phase 1 box 1 (skeleton) is now done. Boxes 2–6 remain, then everything else. Commit at the end of each numbered group.
+**Progress against PRD §16:** Phase 1 boxes 1–5 are done and covered by 94 offline tests. **Box 6 (one real hotel fetched and cached) is the only Phase 1 item left**, and it needs `SERPAPI_API_KEY` in `.env`. Then start Phase 2.
 
-### **Phase 1: Database & SerpApi Caching (Next Priority)**
-1. **Models & config** (do this first, everything depends on it):
-   - `src/hotelpulse/models.py` — copy PRD §9 verbatim, plus whatever view models the UI needs (`Issue` already exists there; add `TopicScore`, `CompetitorRow`, `AnalysisResult`).
-   - `src/hotelpulse/config.py` — `load_dotenv()`, `DB_PATH`, `MAX_REVIEWS_OWN=30`, `MAX_REVIEWS_COMPETITOR=10`, `TAG_MODEL`, `WRITE_MODEL`, `SERP_MONTHLY_BUDGET=250`.
-2. **Database Layer:**
-   - Create `src/hotelpulse/db/schema.sql` (schema is defined in Section 10 of `PRD.md`):
-      - `api_cache`: SHA256 keyed cache of all raw SerpApi responses.
-      - `hotels`: Hotel metadata (`hotel_id`, `name`, `address`, `lat`, `lng`, `rating`, `review_count`, `is_own`).
-      - `reviews`: Individual review records (`review_id`, `hotel_id`, `source`, `rating`, `text`, `review_date`, `reviewer`, `language`).
-      - `mentions`: Topic sentiment mentions (`topic`, `sentiment`, `severity`, `quote`, `quote_en`, `prompt_version`).
-      - `tagged_reviews`: Tracking reviews already processed to prevent re-calling LLM.
-   - Create `src/hotelpulse/db/connection.py` (`get_conn()`, `init_db()`). Turn on `PRAGMA foreign_keys=ON` and `row_factory=sqlite3.Row`.
-   - Create `src/hotelpulse/db/repo.py` (CRUD helpers for cache, hotels, reviews, and mentions).
-   - **Add `api_calls_this_month()`** — counts `api_cache` rows by `fetched_at` month. PRD §6.1 wants a real sidebar number and this is the cheapest local source of truth.
-3. **SerpApi Client Layer:**
-   - Create `src/hotelpulse/serp/client.py`:
-     - Implement `cached_search(engine, params, refresh=False)` wrapper.
-     - Cache key = `sha256(engine + json.dumps(params, sort_keys=True))`.
-     - If cached in `api_cache` and not `refresh=True`, return cached response.
-     - Track monthly API call count against the 250 credit budget.
-     - Wrap `serpapi.HTTPError` / `serpapi.TimeoutError` into a `SerpApiError` carrying a plain-language message. **No stack traces reach the UI** (PRD §13).
-   - Create `src/hotelpulse/serp/maps.py` for finding hotel and nearby competitors (`engine=google_maps`, `type=search`). **Read both `local_results` and `place_results`** — see Gotcha 6.
-   - Create `src/hotelpulse/serp/reviews_maps.py` for paginated Google Maps reviews (`engine=google_maps_reviews`, `data_id`, `sort_by=newestFirst`, loop `next_page_token`).
-   - Create `src/hotelpulse/serp/normalize.py` to convert raw SerpApi JSON into Pydantic models. Field map is in Gotcha 6.
-4. **Tests:**
-   - Do **one real fetch first** (2–3 credits: 1 `google_maps` + 1–2 `google_maps_reviews`), save the raw JSON to `tests/fixtures/maps_search.json` and `maps_reviews.json`. Hand-written fixtures will not match the real shape.
-   - `tests/conftest.py` — temp SQLite fixture + a fake `serpapi.Client` that **raises** if it is ever constructed, so a stray network call fails loudly.
-   - Write `tests/test_normalize.py` and `tests/test_cache.py`.
-   - **Rule:** Never call live APIs in tests. All tests must pass completely offline.
-5. **Manual check (§16 box 6):** run one real hotel fetch, then re-run it and prove 0 API calls were made.
-
-### **Phase 2: LLM Tagging Engine**
-- `src/hotelpulse/analysis/prompts.py` (System prompt with exact verbatim substring constraint).
-- `src/hotelpulse/analysis/tagger.py` (Batch 10–15 reviews into Claude Haiku, validate with Pydantic, verify `assert quote in review.text`).
-- `eval/labeled_reviews.jsonl` and `eval/run_eval.py` to record topic F1 and sentiment accuracy.
+### **Phase 1: Database & SerpApi Caching — 5 of 6 done**
+1. **Models & config — DONE.** [`src/hotelpulse/models.py`](./src/hotelpulse/models.py), [`src/hotelpulse/config.py`](./src/hotelpulse/config.py). PRD §9 verbatim plus additive view models. Note: SerpApi sends ratings as floats and review totals as comma strings under the key `reviews`, so the models coerce on input and junk becomes `None` instead of raising.
+2. **Database layer — DONE.** [`db/schema.sql`](./src/hotelpulse/db/schema.sql), [`db/connection.py`](./src/hotelpulse/db/connection.py), [`db/repo.py`](./src/hotelpulse/db/repo.py).
+3. **SerpApi layer — DONE.** [`serp/client.py`](./src/hotelpulse/serp/client.py), [`serp/maps.py`](./src/hotelpulse/serp/maps.py), [`serp/reviews_maps.py`](./src/hotelpulse/serp/reviews_maps.py), [`serp/normalize.py`](./src/hotelpulse/serp/normalize.py).
+4. **Tests — DONE.** 94 passing offline: [`tests/conftest.py`](./tests/conftest.py), [`tests/test_normalize.py`](./tests/test_normalize.py), [`tests/test_cache.py`](./tests/test_cache.py).
+5. **Manual check — NOT DONE.** Needs an API key. See Gotcha 7.
+6. **Phase 2: LLM Tagging Engine (next)**
+   - `src/hotelpulse/analysis/config.py` — re-export `RECENCY_HALF_LIFE_DAYS`, `MIN_MENTIONS`; keep `PROMPT_VERSION` here so bumping it re-tags.
+   - `src/hotelpulse/analysis/prompts.py` — system prompt from PRD §12 verbatim.
+   - `src/hotelpulse/analysis/tagger.py` — batch 12 reviews into Claude Haiku, validate with Pydantic, drop mentions where `quote not in review.text` (try a whitespace-normalized match first), log the drop rate. Use `repo.untagged_reviews()` so already-tagged reviews are never resent.
+   - `eval/labeled_reviews.jsonl` (30–50 reviews, include Hinglish) and `eval/run_eval.py` for topic F1 + sentiment accuracy.
 
 ### **Phase 3 & 4: Scoring, Ranking & Connecting to UI**
-- `src/hotelpulse/analysis/scoring.py` (Recency decay formula: $w = 0.5^{(\text{age} / 180)}$, 1–5 topic score).
+- `src/hotelpulse/analysis/scoring.py` (Recency decay $w = 0.5^{(\text{age} / 180)}$, 1–5 topic score, `MIN_MENTIONS=3` guard).
 - `src/hotelpulse/analysis/ranking.py` (Fix-first priority $\sum \text{severity} \times w$, top 3 strengths).
-- `src/hotelpulse/services/pipeline.py` (Connect the search & analysis pipeline directly to `streamlit_app.py` so real data replaces mock data).
+- `src/hotelpulse/services/pipeline.py` (Connect the pipeline to `streamlit_app.py` so real data replaces mock data. See the list of hardcoded values in §2.B.3.)
 
 ---
 
 ## 5. Non-Negotiable Rules
 1. **Preserve UI Aesthetics:** Do not simplify or dismantle the custom CSS and card layouts in `components.py` — they must match `design.md`.
-2. **Credit Budget Protection:** Hard limit of 250 SerpApi searches/month. Never call the API if a cached response exists in `api_cache`.
-3. **No Live APIs in Tests:** All tests must run against JSON fixtures.
+2. **Credit Budget Protection:** Hard limit of 250 SerpApi searches/month. Never call the API if a cached response exists in `api_cache`. Count spend from `api_calls`, never from `api_cache` (Gotcha 7).
+3. **No Live APIs in Tests:** All tests must run against JSON fixtures. `tests/conftest.py` enforces this by patching `requests`/`httpx`/`http.client` to raise.
 4. **Verbatim Quote Rule:** Every single quote shown in the UI must be a verified substring of the raw review text.
+5. **No Invented Data:** If a date cannot be parsed, leave it `None` and let scoring fall back to `w = 0.5`. Guessing a date corrupts recency weighting; guessing a match analyses the wrong hotel.
