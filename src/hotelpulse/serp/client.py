@@ -157,6 +157,10 @@ def _friendly_error(exc: Exception) -> str:
             return "SerpApi rejected the API key. Check SERPAPI_API_KEY in your .env file."
         if status == 400:
             return f"SerpApi rejected that request as invalid: {text[:200]}"
+        # The SDK sets status_code = -1 when it wraps a non-HTTP error.
+        if status in (None, -1):
+            detail = getattr(exc, "error", None) or text
+            return f"Could not reach SerpApi: {str(detail)[:200] or name}"
         return f"SerpApi returned an error (HTTP {status})."
 
     if "Timeout" in name:
