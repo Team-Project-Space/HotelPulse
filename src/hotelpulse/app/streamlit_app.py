@@ -97,6 +97,40 @@ def _run_analysis(hotel_name: str, city: str) -> None:
     st.session_state.view_mode = "dashboard"
 
 
+_LANDING_OPTION = "Landing / Search View"
+_DASHBOARD_OPTION = "Dashboard View"
+
+
+def _view_option(view_mode: str) -> str:
+    return _LANDING_OPTION if view_mode == "landing" else _DASHBOARD_OPTION
+
+
+def _on_view_change() -> None:
+    """Sidebar radio -> view_mode.
+
+    Runs only when the user actually changes the radio (Streamlit invokes
+    on_change before the script body), so a programmatic view change made by
+    the Analyze / Search Another Hotel buttons is never undone.
+    """
+    st.session_state.view_mode = (
+        "landing" if st.session_state.sidebar_view_radio == _LANDING_OPTION else "dashboard"
+    )
+
+
+def _sync_widget_text(key: str, value: str) -> None:
+    """Push a canonical value into a text input exactly once.
+
+    A widget key wins over `value=` from the second render onward, so without
+    this the landing inputs never show the hotel/city the analysis used. The
+    marker stops us clobbering whatever the user is currently typing.
+    """
+    marker = f"{key}__synced"
+    if st.session_state.get(marker) == value:
+        return
+    st.session_state[key] = value
+    st.session_state[marker] = value
+
+
 # Evidence Dialog
 @st.dialog("Guest Review Evidence")
 def show_evidence_modal(topic_name: str) -> None:
@@ -146,20 +180,17 @@ def _credit_block() -> None:
 # Sidebar
 with st.sidebar:
     st.markdown("### ⚙️ Demo Controls")
-    selected_view = st.radio(
+    # Sync the widget's stored state with the app *before* it is instantiated.
+    # Once a key exists in session_state it wins over `index`, so a stale value
+    # here would silently flip view_mode back to landing on every rerun — that
+    # is the "Analyze does nothing" bug.
+    st.session_state.sidebar_view_radio = _view_option(st.session_state.view_mode)
+    st.radio(
         "Current Screen",
-        options=["Landing / Search View", "Dashboard View"],
-        index=0 if st.session_state.view_mode == "landing" else 1,
+        options=[_LANDING_OPTION, _DASHBOARD_OPTION],
         key="sidebar_view_radio",
+        on_change=_on_view_change,
     )
-    if selected_view == "Landing / Search View" and st.session_state.view_mode != "landing":
-        st.session_state.view_mode = "landing"
-        st.rerun()
-    elif selected_view == "Dashboard View" and st.session_state.view_mode != "dashboard":
-        if st.session_state.analysis is None:
-            st.info("Run an analysis first (or use the demo button on the landing screen).")
-        st.session_state.view_mode = "dashboard"
-        st.rerun()
 
     st.divider()
     _credit_block()
@@ -187,6 +218,7 @@ if st.session_state.view_mode == "landing":
     col_l, col_center, col_r = st.columns([1, 1.4, 1])
     with col_center:
         with st.container(border=True):
+            _sync_widget_text("hotel_name_input", st.session_state.hotel_name)
             st.markdown(
                 '<label style="font-size:0.875rem; font-weight:600; color:#334155; margin-bottom:0.25rem; display:block;">Hotel name</label>',
                 unsafe_allow_html=True,
@@ -199,6 +231,7 @@ if st.session_state.view_mode == "landing":
                 key="hotel_name_input",
             )
 
+            _sync_widget_text("city_input", st.session_state.city)
             st.markdown(
                 '<label style="font-size:0.875rem; font-weight:600; color:#334155; margin-top:0.85rem; margin-bottom:0.25rem; display:block;">City</label>',
                 unsafe_allow_html=True,
