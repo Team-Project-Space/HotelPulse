@@ -1,4 +1,9 @@
-"""HotelPulse Streamlit dashboard — real pipeline, not mock data."""
+"""HotelPulse Streamlit dashboard — real pipeline, redesigned premium SaaS UI.
+
+The pipeline, scoring, caching and evidence logic are unchanged; this file
+only changes what is rendered and how. Session-state keys and widget keys are
+kept identical so history and tests continue to work.
+"""
 
 from __future__ import annotations
 
@@ -13,18 +18,25 @@ if src_dir not in sys.path:
 
 import streamlit as st  # pyrefly: ignore [missing-import] # type: ignore
 
-from hotelpulse.analysis.ranking import format_gap, topic_label, valid_score
+from hotelpulse.analysis.ranking import (
+    format_gap,
+    priority_label,
+    topic_label,
+    valid_score,
+)
 from hotelpulse.app.components import (
     CUSTOM_CSS,
-    render_top_navbar,
-    render_landing_hero,
+    render_comparison_table_and_actions,
     render_dashboard_header,
-    render_metrics_bar,
     render_fix_cards_html,
+    render_landing_hero,
+    render_metrics_bar,
+    render_source_status,
     render_strength_cards_html,
     render_topics_mini_grid,
-    render_comparison_table_and_actions,
+    render_top_navbar,
 )
+from hotelpulse.models import Review, Source
 from hotelpulse.services.pipeline import (
     PipelineError,
     PipelineResult,
@@ -34,7 +46,7 @@ from hotelpulse.services.pipeline import (
 
 # Page configuration
 st.set_page_config(
-    page_title="HotelPulse - Know what your guests really think",
+    page_title="HotelPulse · Guest Review Intelligence",
     page_icon="🏨",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -42,37 +54,33 @@ st.set_page_config(
 
 st.html(CUSTOM_CSS)
 
+# ---------------------------------------------------------------------------
 # Session state
-if "view_mode" not in st.session_state:
-    st.session_state.view_mode = "landing"
-if "hotel_name" not in st.session_state:
-    st.session_state.hotel_name = "OYO"
-if "city" not in st.session_state:
-    st.session_state.city = "Bangalore"
-if "analysis" not in st.session_state:
-    st.session_state.analysis = None
-if "evidence" not in st.session_state:
-    st.session_state.evidence = {}
-if "error" not in st.session_state:
-    st.session_state.error = None
-if "ran_once" not in st.session_state:
-    st.session_state.ran_once = False
+# ---------------------------------------------------------------------------
+_DEFAULTS = {
+    "view_mode": "landing",
+    "hotel_name": "OYO",
+    "city": "Bangalore",
+    "analysis": None,
+    "evidence": {},
+    "error": None,
+    "ran_once": False,
+    "warnings_seen": [],
+}
+for _k, _v in _DEFAULTS.items():
+    if _k not in st.session_state:
+        st.session_state[_k] = _v
 
 
-def _score_pct(score: float | None) -> int:
-    """Map 1-5 topic score onto the UI's 0-100 indicator."""
+def _score_pct(score: float | None) -> int | None:
+    """Map a 1–5 topic score onto the UI's 0–100 indicator. None passes through."""
     if score is None:
-        return 0
+        return None
     return int(round(score / 5.0 * 100))
 
 
-def _priority_label(score: float | None) -> str:
-    if score is None:
-        return "MEDIUM"
-    return "HIGH PRIORITY" if score < 3.0 else "MEDIUM"
-
-
 def _run_analysis(hotel_name: str, city: str) -> None:
+    """Run the pipeline, catch every failure, and route to the dashboard."""
     try:
         result = analyze_hotel(hotel_name, city, refresh=False)
     except PipelineError as exc:
@@ -97,6 +105,9 @@ def _run_analysis(hotel_name: str, city: str) -> None:
     st.session_state.view_mode = "dashboard"
 
 
+# ---------------------------------------------------------------------------
+# Sidebar wiring (unchanged contract)
+# ---------------------------------------------------------------------------
 _LANDING_OPTION = "Landing / Search View"
 _DASHBOARD_OPTION = "Dashboard View"
 
@@ -108,9 +119,8 @@ def _view_option(view_mode: str) -> str:
 def _on_view_change() -> None:
     """Sidebar radio -> view_mode.
 
-    Runs only when the user actually changes the radio (Streamlit invokes
-    on_change before the script body), so a programmatic view change made by
-    the Analyze / Search Another Hotel buttons is never undone.
+    Runs only when the user actually changes the radio, so a programmatic
+    view change made by buttons is never undone.
     """
     st.session_state.view_mode = (
         "landing" if st.session_state.sidebar_view_radio == _LANDING_OPTION else "dashboard"
@@ -121,8 +131,7 @@ def _sync_widget_text(key: str, value: str) -> None:
     """Push a canonical value into a text input exactly once.
 
     A widget key wins over `value=` from the second render onward, so without
-    this the landing inputs never show the hotel/city the analysis used. The
-    marker stops us clobbering whatever the user is currently typing.
+    this the landing inputs never show the hotel/city the analysis used.
     """
     marker = f"{key}__synced"
     if st.session_state.get(marker) == value:
@@ -131,33 +140,41 @@ def _sync_widget_text(key: str, value: str) -> None:
     st.session_state[marker] = value
 
 
-# Evidence Dialog
+# ---------------------------------------------------------------------------
+# Evidence modal
+# ---------------------------------------------------------------------------
 @st.dialog("Guest Review Evidence")
 def show_evidence_modal(topic_name: str) -> None:
     quotes = st.session_state.evidence.get(topic_name, [])
-    st.markdown(f"### Verbatim Quotes: **{topic_name}**")
+    st.markdown(f"### Verbatim quotes: **{topic_name}**")
     st.caption("Verbatim substrings extracted directly from guest reviews.")
 
     if not quotes:
-        st.info("No negative quotes recorded for this topic.")
+        st.info("No quotes recorded for this topic.")
         return
 
     for item in quotes:
-        sev_stars = "⭐" * int(item.get("severity", 1))
+        sev_stars = "★" * int(item.get("severity", 1))
         sev_color = "#dc2626" if item.get("sentiment") == "negative" else "#d97706"
         st.html(
             f"""
-            <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:10px; padding:1rem; margin-bottom:0.75rem;">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#64748b; margin-bottom:0.35rem;">
-                    <span><b>{item.get('reviewer', 'Guest')}</b> ({item.get('source', 'google maps')})</span>
+            <div style="background:var(--hp-surface); border:1px solid var(--hp-border); border-radius:12px; padding:1rem; margin-bottom:0.75rem;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--hp-text-3); margin-bottom:0.35rem;">
+                    <span><b>{item.get('reviewer', 'Guest')}</b> · {item.get('source', 'review')}</span>
                     <span>{item.get('date', '—')} · <span style="color:{sev_color}; font-weight:700;">{item.get('sentiment', '').upper()}</span> ({sev_stars})</span>
                 </div>
-                <div style="font-size:0.925rem; font-style:italic; color:#1e293b; background:#f8fafc; padding:0.65rem 0.85rem; border-left:3px solid {sev_color}; border-radius:4px;">
+                <div style="font-size:0.925rem; font-style:italic; color:var(--hp-text); background:var(--hp-surface-2); padding:0.65rem 0.85rem; border-left:3px solid {sev_color}; border-radius:0 8px 8px 0;">
                     "{item.get('quote', '')}"
                 </div>
+                <div style="font-size:0.75rem; color:var(--hp-text-4); margin-top:0.4rem;">Verified verbatim against the raw review text</div>
             </div>
             """
         )
+
+
+# ---------------------------------------------------------------------------
+# Sidebar
+# ---------------------------------------------------------------------------
 
 
 def _credit_block() -> None:
@@ -177,13 +194,8 @@ def _credit_block() -> None:
         st.caption("Run an analysis to see live credit usage.")
 
 
-# Sidebar
 with st.sidebar:
     st.markdown("### ⚙️ Demo Controls")
-    # Sync the widget's stored state with the app *before* it is instantiated.
-    # Once a key exists in session_state it wins over `index`, so a stale value
-    # here would silently flip view_mode back to landing on every rerun — that
-    # is the "Analyze does nothing" bug.
     st.session_state.sidebar_view_radio = _view_option(st.session_state.view_mode)
     st.radio(
         "Current Screen",
@@ -203,9 +215,9 @@ with st.sidebar:
         st.rerun()
 
 
-# ==========================================
+# ---------------------------------------------------------------------------
 # Landing / Search View
-# ==========================================
+# ---------------------------------------------------------------------------
 if st.session_state.view_mode == "landing":
     st.html(
         render_top_navbar(
@@ -220,49 +232,49 @@ if st.session_state.view_mode == "landing":
         with st.container(border=True):
             _sync_widget_text("hotel_name_input", st.session_state.hotel_name)
             st.markdown(
-                '<label style="font-size:0.875rem; font-weight:600; color:#334155; margin-bottom:0.25rem; display:block;">Hotel name</label>',
+                '<label style="font-size:0.875rem; font-weight:600; color:var(--hp-text-2); margin-bottom:0.25rem; display:block;">Hotel name</label>',
                 unsafe_allow_html=True,
             )
             hotel_input = st.text_input(
                 "Hotel name",
                 value=st.session_state.hotel_name,
                 label_visibility="collapsed",
-                placeholder="OYO",
+                placeholder="e.g. Hotel O by OYO Manyata Stay Inn",
                 key="hotel_name_input",
             )
 
             _sync_widget_text("city_input", st.session_state.city)
             st.markdown(
-                '<label style="font-size:0.875rem; font-weight:600; color:#334155; margin-top:0.85rem; margin-bottom:0.25rem; display:block;">City</label>',
+                '<label style="font-size:0.875rem; font-weight:600; color:var(--hp-text-2); margin-top:0.85rem; margin-bottom:0.25rem; display:block;">City</label>',
                 unsafe_allow_html=True,
             )
             city_input = st.text_input(
                 "City",
                 value=st.session_state.city,
                 label_visibility="collapsed",
-                placeholder="Bangalore",
+                placeholder="e.g. Bangalore",
                 key="city_input",
             )
 
-            st.html("<div style='height: 1.25rem;'></div>")
+            st.html("<div style='height: 1rem;'></div>")
 
-            if st.button("Analyze my hotel →", type="primary", use_container_width=True):
+            if st.button("Analyze my hotel", type="primary", use_container_width=True):
                 hotel_name = (hotel_input or "").strip() or "OYO"
                 city = (city_input or "").strip() or "Bangalore"
-                with st.spinner("Searching Google Maps, fetching reviews, tagging with Gemini…"):
+                with st.spinner("Searching Google Maps · fetching available reviews · tagging topics with Gemini…"):
                     _run_analysis(hotel_name, city)
                 st.rerun()
 
             st.html(
-                '<div class="hp-subtext">We analyze available guest reviews from Google Maps (Tripadvisor in a later phase).</div>'
+                '<div class="hp-subtext">Searches Google Maps for your hotel, collects available guest reviews, then tags topics and sentiment with free LLM analysis.</div>'
             )
             if st.session_state.error:
                 st.error(st.session_state.error)
 
 
-# ==========================================
+# ---------------------------------------------------------------------------
 # Dashboard View
-# ==========================================
+# ---------------------------------------------------------------------------
 else:
     st.html(
         render_top_navbar(
@@ -293,7 +305,6 @@ else:
     overall = analysis.overall
     comparison = result.comparison
 
-    # Rebuild evidence from the latest result (covers reruns)
     st.session_state.evidence = build_evidence_map(result)
 
     updated = "—"
@@ -312,28 +323,46 @@ else:
         )
     )
 
-    if result.warnings:
-        for w in result.warnings:
-            st.warning(w)
-
-    avg_rating = overall.average_rating if overall.average_rating is not None else 0.0
-    pos_pct = int(round(overall.positive_pct or 0.0))
-    attn_pct = int(round(overall.negative_pct or 0.0))
-
+    # --- Honest source-status chips ----------------------------------------
+    maps_reviews = [r for r in analysis.reviews if r.source == Source.google_maps.value]
+    ta_reviews = [r for r in analysis.reviews if r.source == Source.tripadvisor.value]
+    ta_note = None
+    for w in result.warnings:
+        if "Tripadvisor" in w or "TripAdvisor" in w:
+            ta_note = w.replace("Tripadvisor: ", "").replace("TripAdvisor: ", "")
+            break
     st.html(
-        render_metrics_bar(
-            overall_rating=avg_rating,
-            positive_pct=pos_pct,
-            needs_attention_pct=attn_pct,
-            reviews_analyzed=analysis.reviews_analyzed,
+        render_source_status(
+            maps_available=len(maps_reviews) > 0,
+            tripadvisor_available=len(ta_reviews) > 0,
+            tripadvisor_note=ta_note,
+            no_reviews=len(analysis.reviews) == 0,
         )
     )
 
-    # 🔴 What should I fix?
+    # --- KPI cards ----------------------------------------------------------
+    pos_pct = overall.positive_pct if overall.positive_pct is not None else None
+    attn_pct = overall.negative_pct if overall.negative_pct is not None else None
+    coverage = ("Google Maps + TripAdvisor" if (maps_reviews and ta_reviews)
+                else "Google Maps only" if maps_reviews
+                else "TripAdvisor only" if ta_reviews
+                else "No sources")
+
+    st.html(
+        render_metrics_bar(
+            overall_rating=overall.average_rating,
+            positive_pct=pos_pct,
+            needs_attention_pct=attn_pct,
+            reviews_analyzed=analysis.reviews_analyzed,
+            coverage_label=coverage,
+        )
+    )
+
+    # --- Fix First ----------------------------------------------------------
     st.html(
         """
-        <div class="hp-section-header">🔴 What should I fix?</div>
-        <div class="hp-section-sub">The three issues guests mention most often.</div>
+        <div class="hp-section-header"><span class="hp-section-icon red">①</span>What should I fix?</div>
+        <div class="hp-section-sub">The three issues guests mention most, backed by verbatim review evidence.</div>
         """
     )
 
@@ -354,13 +383,13 @@ else:
             )
         issues_data.append(
             {
-                "priority_level": _priority_label(issue.topic_score),
+                "priority_level": priority_label(issue.topic_score),
                 "topic_name": label,
                 "pct_reviews": pct,
                 "neg_mentions": issue.negative_count,
                 "sample_quote": sample.quote if sample else "No verbatim quote yet.",
                 "source": (
-                    review.source.replace("_", " ") if review else "google maps"
+                    review.source.replace("_", " ") if review else "review"
                 ),
                 "date": (
                     review.review_date.strftime("%d %b %Y")
@@ -370,7 +399,6 @@ else:
             }
         )
 
-    # Pad to 3 cards so the grid stays balanced when data is thin
     while len(issues_data) < 3:
         issues_data.append(
             {
@@ -395,19 +423,19 @@ else:
             ):
                 show_evidence_modal(label)
 
-    st.html("<div style='height: 1.5rem;'></div>")
+    st.html("<div style='height: 1.25rem;'></div>")
 
-    # 🟢 What guests like
+    # --- What guests like ----------------------------------------------------
     st.html(
         """
-        <div class="hp-section-header">🟢 What guests like</div>
+        <div class="hp-section-header"><span class="hp-section-icon teal">✓</span>What guests like</div>
         <div class="hp-section-sub">Keep doing these things.</div>
         """
     )
 
     strengths_data = []
     for s in analysis.strengths:
-        quote = s.quotes[0].quote if s.quotes else "Guests mention this often."
+        quote = s.quotes[0].quote if s.quotes else "Guests mention this topic often."
         strengths_data.append(
             {
                 "topic_name": topic_label(s.topic),
@@ -428,11 +456,11 @@ else:
 
     st.html(render_strength_cards_html(strengths_data[:3]))
 
-    # What guests talk about
+    # --- Topic grid ------------------------------------------------------------
     st.html(
         """
-        <div class="hp-section-header" style="margin-top: 1rem;">What guests talk about</div>
-        <div class="hp-section-sub">Topics mentioned in your reviews.</div>
+        <div class="hp-section-header"><span class="hp-section-icon navy">▦</span>What guests talk about</div>
+        <div class="hp-section-sub">Topic scores (1–5 scale shown as % fill). “Not enough data” means fewer than 3 tagged mentions — it is not a zero score.</div>
         """
     )
 
@@ -445,14 +473,14 @@ else:
         if ts.mention_count > 0
     ]
     if not topics_grid_data:
-        topics_grid_data = [{"name": "No topics yet", "score_pct": 0}]
+        topics_grid_data = [{"name": "No topics yet", "score_pct": None}]
     st.html(render_topics_mini_grid(topics_grid_data))
 
-    # Comparison + actions
+    # --- Comparison + actions ----------------------------------------------------
     st.html(
         """
-        <div class="hp-section-header" style="margin-top: 1rem;">How do you compare?</div>
-        <div class="hp-section-sub">Your hotel vs nearby hotels from the same search.</div>
+        <div class="hp-section-header"><span class="hp-section-icon blue">⇄</span>How do you compare?</div>
+        <div class="hp-section-sub">Valid topic scores vs nearby hotels. Gap = your score − nearby average, on the raw 1–5 scale (never a percentage).</div>
         """
     )
 
@@ -462,7 +490,6 @@ else:
         if valid_score(r.own_score) and valid_score(r.competitor_avg)
     ]
     for row in eligible:
-        # Gap is the raw 1-5 score difference; do NOT scale by 100 or append pp/%.
         gap_text = format_gap(row.own_score - row.competitor_avg)
         comparison_rows.append(
             {
@@ -491,7 +518,7 @@ else:
         for i in analysis.fix_first
     }
     next_actions = []
-    for i, issue in enumerate(analysis.fix_first[:3], start=1):
+    for issue in analysis.fix_first[:3]:
         title, desc = action_templates.get(
             topic_label(issue.topic),
             (f"Review {topic_label(issue.topic).lower()}", "Guests mention this topic."),
@@ -510,8 +537,7 @@ else:
     alert_message = comparison.alert_text or "Not enough comparison data yet."
     if not comparison.competitors:
         alert_message = (
-            "No nearby competitor reviews cached yet — "
-            + alert_message
+            "No nearby competitor reviews cached yet — " + alert_message
         )
 
     st.html(

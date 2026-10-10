@@ -1,0 +1,11 @@
+[theme]
+# HotelPulse premium light theme — matches the CSS variables in components.py.
+# Pinned explicitly so the app renders identically regardless of the viewer's
+# browser dark-mode preference (Streamlit otherwise follows prefers-color-scheme
+# and would clash with the light-surface CSS design system).
+base = "light"
+primaryColor = "#4f46e5"
+backgroundColor = "#f6f7fb"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#0b1220"
+font = "sans serif"

@@ -215,6 +215,17 @@ def format_gap(gap: float) -> str:
 _format_gap = format_gap
 
 
+def priority_label(topic_score: float | None) -> str:
+    """Dashboard priority text for a Fix First card.
+
+    A None score ("not enough data") shows MEDIUM rather than an invented
+    severity. Otherwise: below 3.0 is HIGH PRIORITY, 3.0–3.99 is MEDIUM.
+    """
+    if topic_score is None:
+        return "MEDIUM"
+    return "HIGH PRIORITY" if topic_score < 3.0 else "MEDIUM"
+
+
 def competitor_gap(
     own_scores: list[TopicScore],
     competitor_scores: list[list[TopicScore]],
