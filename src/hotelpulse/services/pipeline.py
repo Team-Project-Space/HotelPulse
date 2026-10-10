@@ -7,7 +7,6 @@ or skipped (reviews already tagged at the current PROMPT_VERSION).
 from __future__ import annotations
 
 import logging
-import math
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 
