@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections import defaultdict
 from datetime import date
 from statistics import mean
@@ -126,6 +127,92 @@ def strengths(
             )
         )
     return out
+
+
+def valid_score(value: object) -> bool:
+    """A topic score is comparable only when it is a finite number in [1, 5].
+
+    Rejects None, NaN, ±infinity, and out-of-range junk. A genuine 0.0 is not
+    a valid value under the PRD §11 formula (range 1..5) and is treated as
+    missing data, not as "user has no problem here".
+    """
+    if value is None or isinstance(value, bool):
+        return False
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return False
+    return math.isfinite(num) and 1.0 <= num <= 5.0
+
+
+# Backwards-compatible private alias.
+_valid_score = valid_score
+
+
+def eligible_comparison_rows(
+    own_scores: list[TopicScore],
+    competitor_scores: list[list[TopicScore]],
+) -> list[CompetitorRow]:
+    """Rows where BOTH sides have valid, comparable 1–5 scores on one topic.
+
+    A topic appears only when our hotel has a valid computed score AND at
+    least one competitor has a valid score for that same canonical topic.
+    Averages use only valid competitor scores; a competitor missing a topic
+    contributes nothing to that topic's mean rather than zero.
+    """
+    own_map = {ts.topic: ts for ts in own_scores if _valid_score(ts.score)}
+    if not own_map:
+        return []
+
+    valid_avg: dict[Topic, float] = {}
+    valid_count: dict[Topic, int] = {}
+    raw_scores: dict[Topic, list[float]] = {}
+    for scores in competitor_scores:
+        for ts in scores:
+            if _valid_score(ts.score):
+                raw_scores.setdefault(ts.topic, []).append(float(ts.score))
+    for topic, vals in raw_scores.items():
+        valid_avg[topic] = mean(vals)
+        valid_count[topic] = len(vals)
+
+    rows: list[CompetitorRow] = []
+    for topic, own_ts in own_map.items():
+        avg = valid_avg.get(topic)
+        if avg is None:
+            continue
+        own = float(own_ts.score)  # type: ignore[arg-type]
+        lower = sum(1 for s in raw_scores[topic] if s < own)
+        flag = "Common in the area" if lower >= max(1, len(raw_scores[topic]) // 2) else "Unique to you"
+        rows.append(
+            CompetitorRow(
+                topic=topic,
+                own_score=own,
+                competitor_avg=avg,
+                gap=own - avg,
+                own_mention_count=own_ts.mention_count,
+                competitors_scoring_low=lower,
+                competitor_count=valid_count[topic],
+                flag=flag,
+            )
+        )
+    return rows
+
+
+def format_gap(gap: float) -> str:
+    """Signed 1-decimal raw 1–5 gap. The score is not a percentage.
+
+    "-1.2" = we are 1.2 points below nearby hotels on this topic.
+    "+0.4" = we are ahead. 0.0 renders without a sign.
+    """
+    rounded = round(gap, 1)
+    if abs(rounded) == 0.0:
+        return "0.0"
+    sign = "+" if rounded > 0 else ""
+    return f"{sign}{rounded:.1f}"
+
+
+# Backwards-compatible private alias.
+_format_gap = format_gap
 
 
 def competitor_gap(

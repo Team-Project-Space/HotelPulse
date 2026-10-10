@@ -702,15 +702,35 @@ def render_comparison_table_and_actions(comparison_rows, alert_text, actions):
     """Renders the bottom 2-column layout (Comparison Table + 3 Actions)."""
     table_rows_html = []
     for row in comparison_rows:
-        gap = row['gap']
-        gap_sign = f"+{gap}" if gap > 0 else f"{gap}"
-        gap_color = "#16a34a" if gap > 0 else "#dc2626"
-        you_color = "#16a34a" if row['you_pct'] >= 70 else ("#f59e0b" if row['you_pct'] >= 50 else "#dc2626")
+        # `gap` arrives pre-formatted as a signed raw 1-5 score difference
+        # ("+0.4", "-1.2", "0.0") — never a percentage or percentage-point
+        # value. Missing data renders as an em-dash row.
+        gap_sign = row['gap']
+        if gap_sign is None:
+            you_pct = row['you_pct']
+            nearby_pct = row['nearby_pct']
+            you_text = "—" if you_pct is None else f"{int(you_pct)}%"
+            nearby_text = "—" if nearby_pct is None else f"{int(nearby_pct)}%"
+            table_rows_html.append(f"""<tr>
+<td class="hp-comp-topic">{row['topic']}</td>
+<td style="color: #94a3b8; font-weight: 700;">{you_text}</td>
+<td style="color: #94a3b8; font-weight: 500;">{nearby_text}</td>
+<td style="color: #94a3b8; font-weight: 700;">—</td>
+</tr>""")
+            continue
+        gap_color = "#dc2626" if gap_sign.startswith("-") else ("#64748b" if gap_sign == "0.0" else "#16a34a")
+        you_pct = row['you_pct']
+        you_color = "#94a3b8" if you_pct is None else (
+            "#16a34a" if you_pct >= 70 else ("#f59e0b" if you_pct >= 50 else "#dc2626")
+        )
+        you_text = "—" if you_pct is None else f"{int(you_pct)}%"
+        nearby_pct = row['nearby_pct']
+        nearby_text = "—" if nearby_pct is None else f"{int(nearby_pct)}%"
 
         table_rows_html.append(f"""<tr>
 <td class="hp-comp-topic">{row['topic']}</td>
-<td style="color: {you_color}; font-weight: 700;">{row['you_pct']}%</td>
-<td style="color: #475569; font-weight: 500;">{row['nearby_pct']}%</td>
+<td style="color: {you_color}; font-weight: 700;">{you_text}</td>
+<td style="color: #475569; font-weight: 500;">{nearby_text}</td>
 <td style="color: {gap_color}; font-weight: 700;">{gap_sign}</td>
 </tr>""")
 

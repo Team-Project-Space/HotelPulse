@@ -7,6 +7,7 @@ or skipped (reviews already tagged at the current PROMPT_VERSION).
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 
@@ -34,9 +35,12 @@ from hotelpulse.models import (
     ComparisonResult,
     Hotel,
     HotelCandidate,
+    Source,
     Topic,
 )
 from hotelpulse.serp import maps, normalize, reviews_maps
+from hotelpulse.serp.identity import match_tripadvisor_listing
+from hotelpulse.serp import tripadvisor as ta
 
 logger = logging.getLogger(__name__)
 
@@ -111,13 +115,22 @@ def _fetch_and_store_reviews(
     refresh: bool = False,
 ) -> int:
     settings = get_settings()
-    raw = reviews_maps.fetch_maps_reviews(
-        cand.source_id,
-        cap=cap if cap is not None else settings.max_reviews_own,
-        max_pages=max_pages if max_pages is not None else settings.max_pages_own,
-        refresh=refresh,
-    )
-    reviews = normalize.maps_reviews_to_reviews(raw, hotel.hotel_id)
+    if cand.source is Source.tripadvisor:
+        raw = ta.fetch_tripadvisor_reviews(
+            cand.source_id,
+            cap=cap if cap is not None else settings.max_reviews_own,
+            max_pages=max_pages if max_pages is not None else settings.max_pages_own,
+            refresh=refresh,
+        )
+        reviews = normalize.tripadvisor_reviews_to_reviews(raw, hotel.hotel_id)
+    else:
+        raw = reviews_maps.fetch_maps_reviews(
+            cand.source_id,
+            cap=cap if cap is not None else settings.max_reviews_own,
+            max_pages=max_pages if max_pages is not None else settings.max_pages_own,
+            refresh=refresh,
+        )
+        reviews = normalize.maps_reviews_to_reviews(raw, hotel.hotel_id)
     stored = repo.store_reviews_with_ids(reviews)
     return len(stored)
 
@@ -154,6 +167,72 @@ def _score_hotel(hotel: Hotel) -> tuple[AnalysisResult, list[MentionEvent]]:
     return analysis, events
 
 
+# ---------------------------------------------------------------------------
+# Cross-source discovery: find the same hotel on Tripadvisor
+# ---------------------------------------------------------------------------
+
+
+def find_tripadvisor_identity(
+    hotel_name: str,
+    city: str,
+    *,
+    refresh: bool = False,
+) -> HotelCandidate | None:
+    """Locate our own hotel on Tripadvisor using conservative identity match.
+
+    `find_tripadvisor_hotels` may return several listings; only one is accepted
+    and only when it confidently belongs to the same hotel. A lookup failure
+    never invalidates Google Maps data — callers simply get None.
+    """
+    settings = get_settings()
+    if not settings.serpapi_api_key:
+        return None
+    try:
+        candidates = ta.find_tripadvisor_hotels(hotel_name, city, refresh=refresh)
+    except Exception as exc:  # noqa: BLE001 — search failure just means None
+        logger.info("tripadvisor search failed for %s %s: %s", hotel_name, city, exc)
+        return None
+    result = match_tripadvisor_listing(hotel_name, [c for c in candidates if c.name])
+    return result.candidate
+
+
+def fetch_tripadvisor_reviews_for(
+    hotel_name: str,
+    city: str,
+    *,
+    cap: int | None = None,
+    refresh: bool = False,
+    identity: HotelCandidate | None = None,
+) -> list:
+    """Fetch Tripadvisor reviews for our own hotel and return stored Reviews.
+
+    Pass a pre-identified `identity` candidate to skip the search. Reviews are
+    stored under the Tripadvisor hotel_id ("tripadvisor:<place_id>"), never
+    mixing with Google Maps hotel ids, and are tagged + scored together with
+    Maps reviews by the dashboard via `get_all_own_reviews`. Raises nothing —
+    an empty/failed Tripadvisor source just yields an empty list.
+    """
+    try:
+        cand = identity or find_tripadvisor_identity(hotel_name, city, refresh=refresh)
+        if cand is None:
+            return []
+        if not get_settings().serpapi_api_key:
+            return []
+        hotel = _ensure_hotel(cand, is_own=False)
+        _fetch_and_store_reviews(
+            cand,
+            hotel,
+            cap=cap if cap is not None else get_settings().max_reviews_own,
+            max_pages=get_settings().max_pages_own,
+            refresh=refresh,
+        )
+        _tag_hotel(hotel.hotel_id, client=None)
+        return repo.get_reviews_for_hotel(hotel.hotel_id)
+    except Exception as exc:  # noqa: BLE001 — Tripadvisor failure degrades, not breaks
+        logger.warning("tripadvisor fetch skipped: %s", exc)
+        return []
+
+
 def analyze_hotel(
     hotel_name: str,
     city: str,
@@ -164,7 +243,12 @@ def analyze_hotel(
     analyze_competitors: bool = True,
     client=None,
 ) -> PipelineResult:
-    """Full PRD §10 pipeline for one hotel, with optional competitor comparison."""
+    """Full PRD §10 pipeline for one hotel, with optional competitor comparison.
+
+    Google Maps is the primary source. Tripadvisor is attempted next and is
+    purely additive: when the listing identity is ambiguous or the request
+    fails, a warning is recorded and Maps-only analysis continues.
+    """
     settings = get_settings()
     if not settings.serpapi_api_key:
         raise PipelineError("SERPAPI_API_KEY is missing. Add it to .env and restart.")
@@ -185,7 +269,32 @@ def analyze_hotel(
     tagged_n, tag_warns = _tag_hotel(own_hotel.hotel_id, client=client)
     warnings.extend(tag_warns)
 
+    # --- Tripadvisor (secondary source, never breaks the primary) -----------
+    ta_identity: HotelCandidate | None = None
+    ta_reviews: list = []
+    try:
+        ta_identity = find_tripadvisor_identity(hotel_name, city, refresh=refresh)
+        if ta_identity is None:
+            warnings.append(
+                "Tripadvisor: no confident listing match found for this hotel — continuing with Google Maps reviews only."
+            )
+        else:
+            ta_hotel = _ensure_hotel(ta_identity, is_own=False)
+            ta_count = _fetch_and_store_reviews(
+                ta_identity,
+                ta_hotel,
+                refresh=refresh,
+            )
+            _tag_hotel(ta_hotel.hotel_id, client=client)
+            ta_reviews = repo.get_reviews_for_hotel(ta_hotel.hotel_id)
+            logger.info("tripadvisor: %d reviews for %s", len(ta_reviews), ta_hotel.name)
+    except Exception as exc:  # noqa: BLE001 — one source failing must not erase the other
+        logger.warning("tripadvisor fetch failed: %s", exc)
+        warnings.append(f"Tripadvisor fetch failed: {exc}")
+
     analysis, own_events = _score_hotel(own_hotel)
+    analysis.reviews.extend(ta_reviews)
+    analysis.reviews_analyzed += len(ta_reviews)
 
     # --- competitors -------------------------------------------------------
     competitor_hotels: list[Hotel] = []

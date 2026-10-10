@@ -13,7 +13,7 @@ if src_dir not in sys.path:
 
 import streamlit as st  # pyrefly: ignore [missing-import] # type: ignore
 
-from hotelpulse.analysis.ranking import topic_label
+from hotelpulse.analysis.ranking import format_gap, topic_label, valid_score
 from hotelpulse.app.components import (
     CUSTOM_CSS,
     render_top_navbar,
@@ -457,28 +457,29 @@ else:
     )
 
     comparison_rows = []
-    for row in comparison.rows:
-        if row.own_score is None and row.competitor_avg is None:
-            continue
-        own_pct = _score_pct(row.own_score)
-        nearby_pct = _score_pct(row.competitor_avg)
-        gap = own_pct - nearby_pct if (row.own_score is not None and row.competitor_avg is not None) else 0
+    eligible = [
+        r for r in comparison.rows
+        if valid_score(r.own_score) and valid_score(r.competitor_avg)
+    ]
+    for row in eligible:
+        # Gap is the raw 1-5 score difference; do NOT scale by 100 or append pp/%.
+        gap_text = format_gap(row.own_score - row.competitor_avg)
         comparison_rows.append(
             {
                 "topic": topic_label(row.topic),
-                "you_pct": own_pct,
-                "nearby_pct": nearby_pct,
-                "gap": gap,
+                "you_pct": int(round(row.own_score / 5 * 100)),
+                "nearby_pct": int(round(row.competitor_avg / 5 * 100)),
+                "gap": gap_text,
             }
         )
 
     if not comparison_rows:
         comparison_rows = [
             {
-                "topic": "Not enough comparison data",
-                "you_pct": 0,
-                "nearby_pct": 0,
-                "gap": 0,
+                "topic": "Not enough comparison data yet.",
+                "you_pct": None,
+                "nearby_pct": None,
+                "gap": None,
             }
         ]
 

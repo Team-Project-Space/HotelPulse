@@ -194,6 +194,7 @@ def tripadvisor_candidates(response: dict[str, Any]) -> list[HotelCandidate]:
                 source=Source.tripadvisor,
                 source_id=key,
                 name=name,
+                place_type=(entry.get("place_type") or None),
                 address=(entry.get("location") or None),
                 review_count=entry.get("reviews"),
                 rating=entry.get("rating"),

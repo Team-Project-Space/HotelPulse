@@ -133,6 +133,7 @@ class HotelCandidate(BaseModel):
     source_id: str
     place_id: str | None = None
     name: str
+    place_type: str | None = None  # Tripadvisor: ACCOMMODATION | GEO | ...
     address: str | None = None
     lat: float | None = None
     lng: float | None = None
