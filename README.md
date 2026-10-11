@@ -5,29 +5,35 @@
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-ff4b4b)
 ![SerpApi](https://img.shields.io/badge/data-SerpApi-4285F4)
-![Tests](https://img.shields.io/badge/offline%20tests-203%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/offline%20tests-228%20passed-brightgreen)
 ![License](https://img.shields.io/badge/license-none-lightgrey)
 
 HotelPulse is a review-intelligence dashboard for independent hotel owners (10–50 rooms, tier-2 and tier-3 Indian cities). It collects available guest reviews from Google Maps and TripAdvisor via SerpApi, uses free LLMs to extract topic-level sentiment across eight canonical service topics, ranks the top three issues to fix first, and compares the hotel's own topic scores against nearby competitors — with every recommendation backed by a verbatim review quote.
+
+> **Hackathon track: Commerce & Market Intelligence.** HotelPulse turns marketplace review data into operational and competitive intelligence a small hotel business can act on. See [Track Fit](#track-fit-commerce--market-intelligence).
 
 ---
 
 ## Table of Contents
 
 1. [The Problem](#the-problem)
-2. [How HotelPulse Helps](#how-hotelpulse-helps)
-3. [Core Features](#core-features)
-4. [Architecture](#architecture)
-5. [Technology Stack](#technology-stack)
-6. [Project Structure](#project-structure)
-7. [Prerequisites and Installation](#prerequisites-and-installation)
-8. [Environment Variables and Secrets](#environment-variables-and-secrets)
-9. [Usage Guide](#usage-guide)
-10. [Screenshots](#screenshots)
-11. [Testing](#testing)
-12. [Privacy, Reliability, and Limitations](#privacy-reliability-and-limitations)
-13. [Hackathon Context](#hackathon-context)
-14. [License and Contributions](#license-and-contributions)
+2. [Why Star Ratings and Keyword Searches Fall Short](#why-star-ratings-and-keyword-searches-fall-short)
+3. [How HotelPulse Helps](#how-hotelpulse-helps)
+4. [Business Value](#business-value)
+5. [Core Features](#core-features)
+6. [Architecture](#architecture)
+7. [From Data to Decision](#from-data-to-decision)
+8. [Technology Stack](#technology-stack)
+9. [Project Structure](#project-structure)
+10. [Prerequisites and Installation](#prerequisites-and-installation)
+11. [Environment Variables and Secrets](#environment-variables-and-secrets)
+12. [Usage Guide](#usage-guide)
+13. [Screenshots](#screenshots)
+14. [Testing](#testing)
+15. [Privacy, Reliability, and Limitations](#privacy-reliability-and-limitations)
+16. [Hackathon Context](#hackathon-context)
+17. [Track Fit: Commerce & Market Intelligence](#track-fit-commerce--market-intelligence)
+18. [License and Contributions](#license-and-contributions)
 
 ---
 
@@ -40,6 +46,28 @@ Independent hotel owners face a daily information problem:
 - **Recurring complaints hide in individual reviews.** One guest mentioning a broken AC is anecdotal; four guests mentioning it in the same month is a pattern the owner cannot always see.
 - **"What do I fix first?" has no evidence-based answer.** Without a structured view, owners act on the loudest recent complaint rather than the most damaging recurring one.
 
+Consider a realistic example: the owner of a 25-room independent hotel wants to lift the guest experience before the next busy season and hold their own against three similar hotels nearby. Guest reviews trickle in across Google Maps and TripAdvisor — praise for the food here, a complaint about night-time noise there, a mention of slow WiFi, a grumble about the AC. Each review is read in isolation, if it is read at all. A single angry review about rude staff feels urgent; meanwhile, four quiet mentions of unclean bathrooms spread over two months — the pattern that is actually costing repeat bookings — go unnoticed because nobody reads the reviews systematically. The owner knows their own star rating but has no consistent way to compare cleanliness, staff, food, or value against the hotel down the road, so competitor decisions rest on impression and hearsay.
+
+The business consequences are concrete:
+
+- Important **recurring problems get overlooked** while one-off incidents grab attention.
+- Owners **react to the loudest complaint** instead of the most frequent or severe pattern.
+- **Positive feedback stays vague** — "guests seem happy" never reveals which strengths (the kitchen? the location? the staff?) must be protected.
+- With limited time and budget, **improvements are hard to prioritize**: fix the WiFi, retrain staff, or repaint the rooms?
+- **Competitor moves are guesses**, not responses to comparable evidence about where the hotel leads or lags.
+
+This is a small-business problem, not an enterprise one. There is no analytics team — there is an owner with a phone, a dozen tabs open, and twenty minutes between check-in and checkout.
+
+## Why Star Ratings and Keyword Searches Fall Short
+
+Manually reading reviews does not scale, and the shortcuts mislead:
+
+- **Star ratings summarize satisfaction but hide causes.** A hotel can hold a respectable 4.1 average while collecting repeated complaints about one service — the number never says *what* is wrong.
+- **Keyword searches miss context.** "The food was not bad" contains the word "bad" but is not a complaint; "The room was clean, but the staff were rude" is positive about cleanliness and negative about staff in a single sentence. A word counter gets both wrong.
+- **Averages and word counts cannot separate the isolated from the recurring.** One guest's bad night is anecdote; five guests describing the same failure is a process problem — and only a systematic, per-topic reading of the actual text can tell them apart.
+
+Owners need a way to turn unstructured review text into interpretable, evidence-backed insight: what guests praise, what they repeatedly complain about, what to fix first, and how the hotel compares — each claim traceable to real guest words.
+
 ## How HotelPulse Helps
 
 HotelPulse turns the available review data into a structured, evidence-backed action plan:
@@ -51,6 +79,28 @@ HotelPulse turns the available review data into a structured, evidence-backed ac
 5. **Compares** the hotel's topic scores against nearby competitors, highlighting where the hotel is ahead and where it lags — with missing data honestly marked, not shown as zero.
 
 The output is a dashboard an owner can act on in under two minutes: *what guests praise, what they complain about, and what to fix first.*
+
+Concretely, the workflow is:
+
+1. **Enter a hotel:** the owner provides a hotel name and city on the landing view and clicks **Analyze my hotel**.
+2. **Collect available reviews:** the app discovers the hotel listing and fetches available Google Maps and TripAdvisor reviews through its supported SerpApi integrations — subject to API availability, pagination, and provider limits. It reports only the reviews the supported APIs expose, never every review ever posted.
+3. **Analyse review text:** the AI pipeline (`analysis/tagger.py`, Gemini preferred with Groq fallback) reads the full text of each review and assigns per-topic sentiment with contextual understanding — negation, contrast, mixed opinions, synonyms, and Hinglish to the extent the model supports it.
+4. **Understand hotel performance:** the dashboard summarizes overall sentiment and per-topic scores on a 1–5 scale (`analysis/scoring.py`), recency-weighted so recent feedback counts more.
+5. **Identify what to fix first:** evidence-backed recommendations (`analysis/ranking.py`) surface the most severe recurring complaints.
+6. **Understand strengths:** the top-scoring topics show what guests appreciate, so the owner knows what to preserve.
+7. **Compare nearby hotels:** when sufficient valid comparable data exists, the dashboard shows topic-level comparisons with signed score gaps; otherwise it says so honestly.
+8. **Inspect evidence:** every recommendation links to supporting guest quotations, each validated as a verbatim substring of its original review before display.
+
+## Business Value
+
+HotelPulse supports practical, day-to-day hotel-management decisions. Examples of how its insights can be used:
+
+- **Repeated cleanliness complaints** may indicate a housekeeping process worth reviewing — especially when several reviews cite the same issue.
+- **Recurring negative staff feedback** may suggest a need to investigate service consistency across shifts.
+- **Positive food feedback** may identify a kitchen strength the hotel should preserve and promote.
+- **Valid competitor comparisons** may show an owner where their hotel genuinely leads (e.g. location, value) and where it lags (e.g. WiFi, noise), grounding investment choices in comparable evidence.
+
+These are examples of how the output *can* inform judgment, not conclusions about any specific hotel — and HotelPulse supports human decision-making rather than replacing it. It surfaces evidence-backed patterns; it does not automatically prove a root cause, and acting on its suggestions guarantees no particular business outcome.
 
 ---
 
@@ -128,7 +178,7 @@ score = 1 + 4 × (positive + 0.5 × mixed) / weighted_total
 ### Database and testing
 
 - **SQLite** with WAL journaling, `PRAGMA foreign_keys = ON`, and one thread-local connection per Streamlit script run + short-lived writer sessions, so no `check_same_thread` surprises across Streamlit reruns.
-- **203 offline tests** (at the time of writing) covering normalisation, cache behaviour, credit accounting, scoring, ranking, tagger quote validation, dashboard view-model construction, TripAdvisor parsing/pagination/identity matching, and comparison eligibility/gap formatting. Tests run fully offline against JSON fixtures and inline payloads; `tests/conftest.py` monkeypatches HTTP libraries so any accidental live call fails loudly.
+- **228 offline tests** (at the time of writing) covering normalisation, cache behaviour, credit accounting, scoring, ranking, tagger quote validation, contextual sentiment handling (negation, mixed sentiment, multi-topic reviews, synonyms, Hinglish, empty/malformed input, provider failure), pipeline source resilience (one-source success/failure, both-source failure, no extra requests), dashboard view-model construction, TripAdvisor parsing/pagination/identity matching, and comparison eligibility/gap formatting. Tests run fully offline against JSON fixtures and inline payloads; `tests/conftest.py` monkeypatches HTTP libraries so any accidental live call fails loudly.
 
 ---
 
@@ -157,7 +207,28 @@ flowchart TD
 
 *All SerpApi branches are cache-first: a cache hit short-circuits the live engine call entirely, costing zero credits.*
 
-The pipeline is orchestrated in `services/pipeline.py`: Google Maps is the primary source; TripAdvisor is attempted second and is purely additive — if listing identity is ambiguous or the request fails, a warning is recorded and Maps-only analysis continues. A failure in one source never erases usable data from the other.
+The pipeline is orchestrated in `services/pipeline.py`: Google Maps is the primary source; TripAdvisor is attempted second and is purely additive — if listing identity is ambiguous or the request fails, a warning is recorded and Maps-only analysis continues. A failure in one source never erases usable data from the other. TripAdvisor reviews are stored under their own TripAdvisor hotel id (preserving source identity and source-aware review ids), but their tagged mentions are merged into the owner's topic scores and sentiment summaries — they shape the report, not just the review count.
+
+---
+
+## From Data to Decision
+
+The same pipeline as a decision workflow — each stage names the component that implements it:
+
+```mermaid
+flowchart LR
+    A["Hotel name + city"] --> B["Source discovery<br/>serp/maps.py<br/>serp/tripadvisor.py<br/>serp/identity.py"]
+    B --> C["Review collection<br/>reviews_maps.py<br/>tripadvisor.py<br/>cached_search + api_calls ledger"]
+    C --> D["Cache + normalization<br/>normalize.py<br/>SQLite reviews"]
+    D --> E["Contextual AI tagging<br/>tagger.py<br/>Gemini → Groq"]
+    E --> F["Topic scoring + aggregation<br/>scoring.py<br/>1–5, recency-weighted"]
+    F --> G["Fix First + strengths<br/>ranking.py"]
+    F --> H["Competitor comparison<br/>where eligible"]
+    G --> I["Streamlit report<br/>streamlit_app.py"]
+    H --> I
+```
+
+In words: a hotel name and city resolve to platform listings (with conservative cross-source identity matching); available reviews are collected through a cache-first client that records every credit spent; raw responses are normalized into one `Review` model; a free LLM tags each review's topics and sentiments in context; mentions are aggregated into recency-weighted 1–5 topic scores; the ranker turns scores into Fix First priorities and strengths; eligible topics are compared against nearby hotels; and the Streamlit dashboard presents the report with verbatim evidence — or an honest explanation wherever data was insufficient.
 
 ---
 
@@ -173,7 +244,7 @@ The pipeline is orchestrated in `services/pipeline.py`: Google Maps is the prima
 | **Google Gemini (free tier)** | Primary tagging LLM | `google-genai` 2.25.0, default model `gemini-3.1-flash-lite`. |
 | **Groq (free tier)** | Fallback tagging LLM | `groq` 1.7.0, default model `llama-3.3-70b-versatile`. |
 | **python-dotenv** | Config | `.env` loaded at import time by `hotelpulse.config`. |
-| **Pytest** | Testing | 203 offline tests; `conftest.py` also installs a fake SerpApi client and forbids network. |
+| **Pytest** | Testing | 228 offline tests; `conftest.py` also installs a fake SerpApi client and forbids network. |
 | **Plotly** | Declared dependency | Present in `pyproject` / `requirements.txt`; no chart currently rendered by the dashboard UI. |
 
 ---
@@ -320,7 +391,7 @@ The suite runs fully offline — no API key, no network. `tests/conftest.py` poi
 py -m pytest
 ```
 
-At the time of writing: **203 passed, 0 failed** (verified on this machine, 2026-10-10). Useful variants:
+At the time of writing: **228 passed, 0 failed** (verified on this machine, 2026-10-11). Useful variants:
 
 ```bash
 py -m pytest tests/test_tripadvisor.py -v    # one file, verbose
@@ -356,6 +427,20 @@ Results are written to `eval/results.md`. The labeled set in `eval/labeled_revie
 HotelPulse was built for the **SerpApi Hackathon — Commerce & Market Intelligence track**. SerpApi's Google Maps and TripAdvisor engines make structured public review data accessible in a few lines of Python; HotelPulse layers review normalization, free-LLM topic analysis, recency-weighted scoring, and competitor comparison on top to turn that raw review data into customer-experience and market-position insight a hotel owner can act on.
 
 Public repo: https://github.com/Team-Project-Space/HotelPulse
+
+---
+
+## Track Fit: Commerce & Market Intelligence
+
+HotelPulse belongs in the **Commerce & Market Intelligence** track because it is a decision-support workflow built on marketplace data, not a scraper or a sentiment chart:
+
+- **External marketplace data in:** it collects real customer-review data from Google Maps and TripAdvisor via SerpApi to understand guest expectations.
+- **Unstructured text → structured insight:** free-LLM analysis converts free-text reviews into per-topic sentiment, severity-weighted priorities, and 1–5 scores a non-technical owner can read.
+- **Operational priorities out:** Fix First recommendations tell a small business where limited time and money should go first, each backed by verbatim guest evidence.
+- **Competitor intelligence when the evidence allows:** topic-level comparisons show where the hotel leads or lags nearby rivals — and say plainly when the data cannot support a comparison.
+- **API + AI in service of a real decision:** cached, budget-guarded data collection combined with contextual language analysis produces something the owner could not get from star ratings: *what to fix, what to keep, and how you compare.*
+
+No official selection, endorsement, award, or acceptance is claimed — this section describes fit with the track's theme.
 
 ---
 

@@ -18,6 +18,13 @@ from hotelpulse.analysis.prompts import SYSTEM_PROMPT
 from hotelpulse.db import repo
 from hotelpulse.models import Review, Sentiment, Topic
 
+try:
+    # Imported at collection time: conftest's network guard replaces
+    # httpx.Client during tests, which breaks a mid-test `import google.genai`.
+    from google.genai import types as _genai_types
+except ImportError:  # pragma: no cover - dependency is declared
+    _genai_types = None
+
 
 def _review(text: str, rid: str = "r1") -> Review:
     return Review(
@@ -72,6 +79,81 @@ def test_quote_not_in_review_is_false():
 def test_quote_over_max_length_is_false():
     r = _review("x" * 500)
     assert not tagger.quote_matches("x" * 201, r.text)
+
+
+# ---------------------------------------------------------------------------
+# salvage_verbatim_quote — strict recovery, never invention
+# ---------------------------------------------------------------------------
+
+
+def test_salvage_recovers_truncated_model_quote():
+    review_text = "the whole hotel was very dirty"
+    quote = "the whole hotel was very dirty and smelly"
+    salvaged = tagger.salvage_verbatim_quote(quote, review_text)
+    assert salvaged == "the whole hotel was very dirty"
+    assert salvaged in review_text
+
+
+def test_salvage_keeps_mention_with_verbatim_run():
+    r = _review("the whole hotel was very dirty")
+    raw = [
+        tagger.LLMMention(
+            topic="cleanliness",
+            sentiment="negative",
+            severity=2,
+            quote="the whole hotel was very dirty and smelly",
+            quote_en="the whole hotel was very dirty and smelly",
+        )
+    ]
+    kept, dropped = tagger.validate_mentions(r, raw)
+    assert dropped == 0
+    assert len(kept) == 1
+    assert kept[0].quote == "the whole hotel was very dirty"
+    assert kept[0].quote in r.text
+
+
+def test_salvage_rejects_fully_invented_quote():
+    r = _review("Clean room and polite staff.")
+    assert tagger.salvage_verbatim_quote(
+        "the Martian breakfast buffet was sublime", r.text
+    ) is None
+    raw = [
+        tagger.LLMMention(
+            topic="food",
+            sentiment="positive",
+            severity=1,
+            quote="the Martian breakfast buffet was sublime",
+        )
+    ]
+    kept, dropped = tagger.validate_mentions(r, raw)
+    assert kept == []
+    assert dropped == 1
+
+
+def test_salvage_rejects_short_shared_run():
+    # Only "was good" overlaps — too weak to serve as evidence.
+    r = _review("The stay was good overall.")
+    assert tagger.salvage_verbatim_quote(
+        "Everything was good and amazing today", r.text
+    ) is None
+
+
+def test_salvage_rejects_short_model_quote():
+    r = _review("The food was great.")
+    assert tagger.salvage_verbatim_quote("tasty food", r.text) is None
+
+
+def test_gemini_config_disables_unused_function_calling():
+    """AFC is never used (no tools are sent); the SDK warning must stay off."""
+    if _genai_types is None:
+        pytest.skip("google-genai not installed")
+    from hotelpulse.analysis.llm_client import _gemini_config
+
+    config = _gemini_config("system prompt", 4096, 0.0)
+    assert config.automatic_function_calling.disable is True
+    assert config.system_instruction == "system prompt"
+    assert config.max_output_tokens >= 1024
+    assert config.temperature == 0.0
 
 
 # ---------------------------------------------------------------------------

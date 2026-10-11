@@ -357,3 +357,31 @@ def test_landing_input_updates_after_a_successful_analysis(monkeypatch) -> None:
 
     assert at.session_state["view_mode"] == "landing"
     assert at.session_state["hotel_name_input"] == OWN.name
+
+
+def test_landing_inputs_initialized_from_session_state_only(monkeypatch) -> None:
+    """Regression: widget keys are pre-initialized, so no `value=` default
+    conflicts with the Session State API (the `hotel_name_input` warning)."""
+    _patch_pipeline(monkeypatch)
+    at = _app()
+    at.run()
+
+    assert not at.exception, [e.message for e in at.exception]
+    assert at.session_state["hotel_name_input"] == "OYO"
+    assert at.session_state["city_input"] == "Bangalore"
+    assert at.text_input(key="hotel_name_input").value == "OYO"
+    assert at.text_input(key="city_input").value == "Bangalore"
+
+    # A rerun without interaction keeps the same values (no reset, no error).
+    at.run()
+    assert not at.exception, [e.message for e in at.exception]
+    assert at.text_input(key="hotel_name_input").value == "OYO"
+
+
+def test_landing_description_text_removed(monkeypatch) -> None:
+    """The landing-page SerpApi/LLM description must not be rendered."""
+    _patch_pipeline(monkeypatch)
+    at = _app()
+    at.run()
+
+    assert _page_text(at).count("Searches Google Maps for your hotel") == 0

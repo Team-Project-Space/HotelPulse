@@ -7,8 +7,10 @@ or skipped (reviews already tagged at the current PROMPT_VERSION).
 from __future__ import annotations
 
 import logging
+import time
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
+from typing import Any
 
 from hotelpulse.analysis.config import PROMPT_VERSION
 from hotelpulse.analysis.ranking import (
@@ -38,10 +40,30 @@ from hotelpulse.models import (
     Topic,
 )
 from hotelpulse.serp import maps, normalize, reviews_maps
+from hotelpulse.serp.client import cache_hit_miss_counts
 from hotelpulse.serp.identity import match_tripadvisor_listing
 from hotelpulse.serp import tripadvisor as ta
 
 logger = logging.getLogger(__name__)
+
+
+def _log_stage(stage: str, started: float, **fields: Any) -> None:
+    """One structured timing line per pipeline stage.
+
+    Only counts, elapsed time, and cache/provider metadata are logged —
+    never API keys, secrets, or review text.
+    """
+    elapsed_ms = (time.perf_counter() - started) * 1000.0
+    detail = " ".join(f"{k}={v}" for k, v in fields.items())
+    logger.info("stage=%s elapsed_ms=%.1f %s", stage, elapsed_ms, detail)
+
+
+def _cache_delta() -> tuple[int, int]:
+    """Current (hits, misses) snapshot for before/after comparisons."""
+    try:
+        return cache_hit_miss_counts()
+    except Exception:  # noqa: BLE001 — stats must never break the pipeline
+        return (0, 0)
 
 
 class PipelineError(RuntimeError):
@@ -148,9 +170,18 @@ def _tag_hotel(hotel_id: str, *, client=None) -> tuple[int, list[str]]:
         return 0, warnings
 
 
-def _score_hotel(hotel: Hotel) -> tuple[AnalysisResult, list[MentionEvent]]:
-    events = load_mention_events(hotel.hotel_id)
-    reviews = repo.get_reviews_for_hotel(hotel.hotel_id)
+def _score_hotel(
+    hotel: Hotel,
+    *,
+    extra_events: list[MentionEvent] | None = None,
+    extra_reviews: list | None = None,
+) -> tuple[AnalysisResult, list[MentionEvent]]:
+    # Tripadvisor reviews are stored under their own hotel_id (source identity
+    # is preserved), but they describe the owner's hotel — so their tagged
+    # mentions must contribute to the owner's topic scores, not just inflate
+    # the review count. Callers pass them in via extra_events/extra_reviews.
+    events = load_mention_events(hotel.hotel_id) + list(extra_events or [])
+    reviews = repo.get_reviews_for_hotel(hotel.hotel_id) + list(extra_reviews or [])
     scores = score_all_topics(events)
     overall = overall_stats(reviews, events, average_rating=hotel.rating)
     analysis = AnalysisResult(
@@ -255,22 +286,59 @@ def analyze_hotel(
     init_db()
     warnings: list[str] = []
 
+    # One shared LLM client for the whole analysis. Previously every tagging
+    # batch built its own provider client (SDK construction per batch); reuse
+    # removes that overhead. When no provider is configured this stays None
+    # and each batch is skipped exactly as before — no behaviour change.
+    shared_client = client
+    if shared_client is None:
+        try:
+            from hotelpulse.analysis.llm_client import LLMClientError, get_llm_client
+
+            shared_client = get_llm_client()
+        except Exception as exc:  # noqa: BLE001 — missing keys just mean untagged
+            logger.info("no LLM provider configured; tagging will be skipped: %s", exc)
+            shared_client = None
+
+    t0 = time.perf_counter()
     candidates = maps.find_hotels(hotel_name, city, refresh=refresh)
     own_cand = _pick_candidate(candidates, hotel_name, city)
     own_hotel = _ensure_hotel(own_cand, is_own=True)
     logger.info("own hotel: %s (%s)", own_hotel.name, own_hotel.hotel_id)
+    _log_stage("discovery", t0, candidates=len(candidates))
 
+    t0 = time.perf_counter()
+    hits0, misses0 = _cache_delta()
     _fetch_and_store_reviews(
         own_cand,
         own_hotel,
         refresh=refresh,
     )
-    tagged_n, tag_warns = _tag_hotel(own_hotel.hotel_id, client=client)
+    own_review_count = repo.count_reviews(own_hotel.hotel_id)
+    hits1, misses1 = _cache_delta()
+    _log_stage(
+        "own_fetch",
+        t0,
+        reviews=own_review_count,
+        cache_hits=hits1 - hits0,
+        cache_misses=misses1 - misses0,
+    )
+    t0 = time.perf_counter()
+    tagged_n, tag_warns = _tag_hotel(own_hotel.hotel_id, client=shared_client)
     warnings.extend(tag_warns)
+    _log_stage(
+        "own_tag",
+        t0,
+        mentions=tagged_n,
+        provider=getattr(shared_client, "provider", None) or getattr(shared_client, "model", "test-double"),
+    )
 
     # --- Tripadvisor (secondary source, never breaks the primary) -----------
     ta_identity: HotelCandidate | None = None
     ta_reviews: list = []
+    ta_events: list[MentionEvent] = []
+    t0 = time.perf_counter()
+    hits0, misses0 = _cache_delta()
     try:
         ta_identity = find_tripadvisor_identity(hotel_name, city, refresh=refresh)
         if ta_identity is None:
@@ -284,20 +352,34 @@ def analyze_hotel(
                 ta_hotel,
                 refresh=refresh,
             )
-            _tag_hotel(ta_hotel.hotel_id, client=client)
+            _tag_hotel(ta_hotel.hotel_id, client=shared_client)
             ta_reviews = repo.get_reviews_for_hotel(ta_hotel.hotel_id)
+            ta_events = load_mention_events(ta_hotel.hotel_id)
             logger.info("tripadvisor: %d reviews for %s", len(ta_reviews), ta_hotel.name)
     except Exception as exc:  # noqa: BLE001 — one source failing must not erase the other
         logger.warning("tripadvisor fetch failed: %s", exc)
         warnings.append(f"Tripadvisor fetch failed: {exc}")
+    finally:
+        hits1, misses1 = _cache_delta()
+        _log_stage(
+            "tripadvisor",
+            t0,
+            matched=ta_identity is not None,
+            reviews=len(ta_reviews),
+            mentions=len(ta_events),
+            cache_hits=hits1 - hits0,
+            cache_misses=misses1 - misses0,
+        )
 
-    analysis, own_events = _score_hotel(own_hotel)
-    analysis.reviews.extend(ta_reviews)
-    analysis.reviews_analyzed += len(ta_reviews)
+    t0 = time.perf_counter()
+    analysis, own_events = _score_hotel(own_hotel, extra_events=ta_events, extra_reviews=ta_reviews)
+    _log_stage("scoring", t0, mentions=len(own_events), topics=len(analysis.topic_scores))
 
     # --- competitors -------------------------------------------------------
     competitor_hotels: list[Hotel] = []
     competitor_score_lists = []
+    t0 = time.perf_counter()
+    comp_tagged = 0
     if analyze_competitors and max_competitors > 0:
         others = [c for c in candidates if c.source_id != own_cand.source_id][:max_competitors]
         for cand in others:
@@ -310,13 +392,20 @@ def analyze_hotel(
                     max_pages=1,
                     refresh=False,
                 )
-                _tag_hotel(hotel.hotel_id, client=client)
+                n, _ = _tag_hotel(hotel.hotel_id, client=shared_client)
+                comp_tagged += n
                 scores = score_all_topics(load_mention_events(hotel.hotel_id))
                 competitor_hotels.append(hotel)
                 competitor_score_lists.append(scores)
             except Exception as exc:  # competitor failure must not sink the owner
                 logger.warning("competitor %s failed: %s", cand.name, exc)
                 warnings.append(f"Competitor “{getattr(cand, 'name', '?')}” skipped: {exc}")
+    _log_stage(
+        "competitors",
+        t0,
+        competitors=len(competitor_hotels),
+        mentions=comp_tagged,
+    )
 
     # Show topics the owner talks about, plus any competitor topic we scored.
     own_topics = [ts.topic for ts in analysis.topic_scores if ts.mention_count > 0]

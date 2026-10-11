@@ -138,13 +138,7 @@ class LLMClient:
         except ImportError as exc:  # pragma: no cover
             raise LLMClientError("google-genai types unavailable.") from exc
 
-        # Thinking models burn tokens before the visible answer; keep a floor.
-        max_tokens = max(int(max_tokens), 1024)
-        config = types.GenerateContentConfig(
-            system_instruction=system,
-            max_output_tokens=max_tokens,
-            temperature=temperature,
-        )
+        config = _gemini_config(system, max_tokens, temperature)
         last_exc: Exception | None = None
         for attempt in range(4):
             try:
@@ -171,6 +165,26 @@ class LLMClient:
                     continue
                 raise LLMClientError(f"Gemini call failed: {exc}") from exc
         raise LLMClientError(f"Gemini call failed: {last_exc}") from last_exc
+
+
+def _gemini_config(system: str, max_tokens: int, temperature: float) -> Any:
+    """Build the `GenerateContentConfig` for tagging calls.
+
+    Automatic function calling is explicitly disabled: tagging sends plain
+    text and no tools, so AFC is unused — without this the SDK logs a
+    "Direct use of automatic function calling ... is not recommended"
+    warning on every call. Behaviour is otherwise unchanged.
+    """
+    from google.genai import types
+
+    # Thinking models burn tokens before the visible answer; keep a floor.
+    max_tokens = max(int(max_tokens), 1024)
+    return types.GenerateContentConfig(
+        system_instruction=system,
+        max_output_tokens=max_tokens,
+        temperature=temperature,
+        automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+    )
 
 
 def _response_text(response: Any) -> str:

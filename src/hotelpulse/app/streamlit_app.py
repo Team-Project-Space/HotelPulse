@@ -61,6 +61,13 @@ _DEFAULTS = {
     "view_mode": "landing",
     "hotel_name": "OYO",
     "city": "Bangalore",
+    # Widget keys are initialized here — the single source of truth for the
+    # landing inputs. The text_input widgets below are created with `key=`
+    # only (no `value=` default), so there is no default-vs-session-state
+    # conflict. `_sync_widget_text` may assign these keys, but only *before*
+    # the widget is instantiated on that run, which Streamlit allows.
+    "hotel_name_input": "OYO",
+    "city_input": "Bangalore",
     "analysis": None,
     "evidence": {},
     "error": None,
@@ -237,7 +244,6 @@ if st.session_state.view_mode == "landing":
             )
             hotel_input = st.text_input(
                 "Hotel name",
-                value=st.session_state.hotel_name,
                 label_visibility="collapsed",
                 placeholder="e.g. Hotel O by OYO Manyata Stay Inn",
                 key="hotel_name_input",
@@ -250,7 +256,6 @@ if st.session_state.view_mode == "landing":
             )
             city_input = st.text_input(
                 "City",
-                value=st.session_state.city,
                 label_visibility="collapsed",
                 placeholder="e.g. Bangalore",
                 key="city_input",
@@ -265,9 +270,6 @@ if st.session_state.view_mode == "landing":
                     _run_analysis(hotel_name, city)
                 st.rerun()
 
-            st.html(
-                '<div class="hp-subtext">Searches Google Maps for your hotel, collects available guest reviews, then tags topics and sentiment with free LLM analysis.</div>'
-            )
             if st.session_state.error:
                 st.error(st.session_state.error)
 

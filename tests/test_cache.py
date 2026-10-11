@@ -61,6 +61,19 @@ def test_first_call_hits_api_and_second_is_served_from_cache(serp_client):
     assert "_cached_at" not in first
 
 
+def test_hit_miss_counters_track_cache_decisions(serp_client):
+    from hotelpulse.serp.client import cache_hit_miss_counts, reset_hit_miss_counts
+
+    reset_hit_miss_counts()
+    cached_search("google_maps", MAPS_PARAMS)
+    assert cache_hit_miss_counts() == (0, 1)
+    cached_search("google_maps", MAPS_PARAMS)
+    cached_search("google_maps", MAPS_PARAMS)
+    assert cache_hit_miss_counts() == (2, 1)
+    cached_search("google_maps", MAPS_PARAMS, refresh=True)
+    assert cache_hit_miss_counts() == (2, 2)
+
+
 def test_cache_hit_returns_the_same_payload(serp_client):
     cached_search("google_maps", MAPS_PARAMS)
     from_cache = cached_search("google_maps", MAPS_PARAMS)

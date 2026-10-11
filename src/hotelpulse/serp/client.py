@@ -31,6 +31,24 @@ class BudgetExhausted(SerpApiError):
 
 _client: Any | None = None
 
+# Process-wide hit/miss counters for observability (timing logs). A "miss" is
+# counted only when a live call actually goes out, so misses always equal
+# `api_calls` ledger entries. They are never used for budget accounting —
+# the append-only `api_calls` ledger remains the sole authority on credits
+# spent.
+_counters = {"hits": 0, "misses": 0}
+
+
+def cache_hit_miss_counts() -> tuple[int, int]:
+    """(cache hits, cache misses) since process start. Read-only."""
+    return (_counters["hits"], _counters["misses"])
+
+
+def reset_hit_miss_counts() -> None:
+    """Zero the hit/miss counters (tests)."""
+    _counters["hits"] = 0
+    _counters["misses"] = 0
+
 
 def get_client() -> Any:
     """Build (and memoize) the official `serpapi.Client`.
@@ -105,6 +123,7 @@ def cached_search(
     if not refresh:
         cached = repo.cache_get(key)
         if cached is not None:
+            _counters["hits"] += 1
             logger.info("cache hit engine=%s key=%s", engine, key[:12])
             return cached
 
@@ -131,6 +150,7 @@ def cached_search(
 
     # Record the spend before writing the cache so a crash between the two
     # under-reports rather than over-reports credit usage.
+    _counters["misses"] += 1
     repo.log_api_call(
         key,
         engine,

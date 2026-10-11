@@ -76,6 +76,40 @@ def quote_matches(quote: str, review_text: str) -> bool:
     return _normalize_ws(quote) in _normalize_ws(review_text)
 
 
+# Minimum verbatim run that may be salvaged from a non-matching model quote.
+# Anything shorter is too weak to serve as evidence and stays dropped.
+_SALVAGE_MIN_WORDS = 4
+_SALVAGE_MIN_CHARS = 25
+
+
+def salvage_verbatim_quote(quote: str, review_text: str) -> str | None:
+    """Recover the longest verbatim word-run of `quote` found in `review_text`.
+
+    The model sometimes paraphrases or truncates an otherwise genuine passage
+    ("the food was absolutely terrible and bland" for source text "the food
+    was terrible"). Rather than losing the mention, keep the longest
+    contiguous word-run that appears *exactly* in the source — still a fully
+    verifiable substring, never an invention. Returns None when no run meets
+    the minimum strength, in which case the caller must drop the mention.
+    Matching is whitespace-normalized on both sides; comparison is exact.
+    """
+    if not quote or not review_text:
+        return None
+    norm_review = _normalize_ws(review_text)
+    words = _normalize_ws(quote).split()
+    if len(words) < _SALVAGE_MIN_WORDS:
+        return None
+    # Longest runs first: the first verbatim hit is the best salvage.
+    for width in range(len(words), _SALVAGE_MIN_WORDS - 1, -1):
+        for start in range(0, len(words) - width + 1):
+            candidate = " ".join(words[start : start + width])
+            if len(candidate) < _SALVAGE_MIN_CHARS:
+                continue
+            if candidate in norm_review:
+                return candidate
+    return None
+
+
 def validate_mentions(
     review: Review,
     raw_mentions: Sequence[LLMMention],
@@ -84,7 +118,8 @@ def validate_mentions(
 
     Returns (kept, dropped_count). Drops:
       - unknown topic or sentiment (Pydantic enum coercion fails)
-      - quote not a verbatim substring of review.text
+      - quote not a verbatim substring of review.text (after one strict
+        salvage attempt — see `salvage_verbatim_quote`)
       - more than one mention for the same topic (keep the first)
     """
     kept: list[TopicMention] = []
@@ -103,15 +138,25 @@ def validate_mentions(
             dropped += 1
             continue
 
-        if not quote_matches(raw.quote, review.text):
-            logger.warning(
-                "dropping non-verbatim quote review_id=%s topic=%s quote=%r",
+        quote = raw.quote
+        if not quote_matches(quote, review.text):
+            salvaged = salvage_verbatim_quote(quote, review.text)
+            if salvaged is None:
+                logger.warning(
+                    "dropping non-verbatim quote review_id=%s topic=%s quote=%r",
+                    review.review_id,
+                    topic.value,
+                    raw.quote[:80],
+                )
+                dropped += 1
+                continue
+            logger.info(
+                "salvaged verbatim run review_id=%s topic=%s chars=%d",
                 review.review_id,
                 topic.value,
-                raw.quote[:80],
+                len(salvaged),
             )
-            dropped += 1
-            continue
+            quote = salvaged
 
         kept.append(
             TopicMention(
@@ -119,7 +164,7 @@ def validate_mentions(
                 topic=topic,
                 sentiment=sentiment,
                 severity=raw.severity,
-                quote=raw.quote,
+                quote=quote,
                 quote_en=raw.quote_en,
             )
         )
@@ -275,7 +320,8 @@ def tag_reviews(
 
     Already-tagged reviews are skipped (cost saving). Mentions with
     non-verbatim quotes are dropped. When `persist` is True, results are
-    written via `repo.replace_mentions`.
+    written once per batch via `repo.replace_mentions_many` (one shared
+    transaction instead of one connection per review).
     """
     size = batch_size or get_settings().llm_batch_size or 12
     pending = repo.untagged_reviews(list(reviews), prompt_version) if persist else list(reviews)
@@ -295,6 +341,7 @@ def tag_reviews(
             continue
 
         by_id = {r.review_id: r for r in batch}
+        writes: list[tuple[str, list[TopicMention]]] = []
         for result in parsed.results:
             review = by_id.get(result.review_id)
             if review is None:
@@ -305,14 +352,15 @@ def tag_reviews(
             total_dropped += dropped
             all_mentions.extend(kept)
             if persist:
-                repo.replace_mentions(review.review_id, kept, prompt_version)
+                writes.append((review.review_id, kept))
 
         # Reviews the LLM omitted still get marked tagged (zero mentions).
         returned_ids = {r.review_id for r in parsed.results}
         if persist:
             for review in batch:
                 if review.review_id not in returned_ids:
-                    repo.replace_mentions(review.review_id, [], prompt_version)
+                    writes.append((review.review_id, []))
+            repo.replace_mentions_many(writes, prompt_version)
 
     if total_raw:
         rate = total_dropped / total_raw

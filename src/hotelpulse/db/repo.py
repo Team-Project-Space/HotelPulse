@@ -344,33 +344,52 @@ def replace_mentions(review_id: str, mentions: Sequence[TopicMention], prompt_ve
     `id` primary key, so re-running the tagger with the same output would
     otherwise duplicate rows.
     """
+    return replace_mentions_many([(review_id, mentions)], prompt_version)
+
+
+def replace_mentions_many(
+    items: Sequence[tuple[str, Sequence[TopicMention]]],
+    prompt_version: str,
+) -> int:
+    """Batch version of `replace_mentions`: one transaction for many reviews.
+
+    Same SQL and delete-then-insert semantics per review — only the commit is
+    shared, so tagging N reviews costs one connection open/commit/close
+    instead of N. Returns the total mentions written.
+    """
+    items = list(items)
+    if not items:
+        return 0
+    total = 0
     with db_session() as conn:
-        conn.execute("DELETE FROM mentions WHERE review_id = ?", (review_id,))
-        if mentions:
-            conn.executemany(
-                """
-                INSERT INTO mentions
-                    (review_id, topic, sentiment, severity, quote, quote_en, prompt_version)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                [
-                    (
-                        review_id,
-                        m.topic.value,
-                        m.sentiment.value,
-                        m.severity,
-                        m.quote,
-                        m.quote_en,
-                        prompt_version,
-                    )
-                    for m in mentions
-                ],
+        for review_id, mentions in items:
+            conn.execute("DELETE FROM mentions WHERE review_id = ?", (review_id,))
+            if mentions:
+                conn.executemany(
+                    """
+                    INSERT INTO mentions
+                        (review_id, topic, sentiment, severity, quote, quote_en, prompt_version)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    [
+                        (
+                            review_id,
+                            m.topic.value,
+                            m.sentiment.value,
+                            m.severity,
+                            m.quote,
+                            m.quote_en,
+                            prompt_version,
+                        )
+                        for m in mentions
+                    ],
+                )
+                total += len(mentions)
+            conn.execute(
+                "INSERT OR IGNORE INTO tagged_reviews (review_id, prompt_version) VALUES (?, ?)",
+                (review_id, prompt_version),
             )
-        conn.execute(
-            "INSERT OR IGNORE INTO tagged_reviews (review_id, prompt_version) VALUES (?, ?)",
-            (review_id, prompt_version),
-        )
-    return len(mentions)
+    return total
 
 
 def get_mentions_for_hotel(
