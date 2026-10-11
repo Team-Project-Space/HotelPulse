@@ -14,7 +14,26 @@ HotelPulse is a review-intelligence dashboard for independent hotel owners (10�
 
 ---
 
+## 🎬 Project Demo
+
+Watch the HotelPulse workflow running locally — entering hotel details, collecting available reviews, analysing guest feedback by topic, viewing recommendations with verbatim evidence, and comparing nearby hotels where data permits.
+
+**Watch the demo on Google Drive (recommended for judges):**
+https://drive.google.com/file/d/1Zalpz7gsrA5RX1swdhuJXQQqCcP0JmK8/view?usp=sharing
+
+> The Drive link must be shared as **Anyone with the link — Viewer** so it opens in an incognito/private window without requesting access. Sharing-setting verification is the owner's step in Drive > Share > General access.
+
+Repository-local copy (53.5 MB, for local viewing — not streamed inline by GitHub):
+
+[Download or view the HotelPulse demo video](DemoVideo/HotelPulseDemo.mp4)
+
+> Note on inline playback: GitHub READMEs do not render a relative-path MP4 (`DemoVideo/*.mp4`), an HTML `<video>` element, or a Google Drive iframe as an inline player. True inline playback requires a GitHub-hosted video attachment URL (`https://github.com/user-attachments/assets/...`), which is only issued when the video is manually uploaded through GitHub's web UI. No such attachment URL exists yet, so none is embedded here — the Drive link above is the accessible fallback. To enable inline playback later: (1) open the repo on github.com, (2) start editing `README.md` (or open a new issue/PR comment), (3) drag-and-drop `DemoVideo/HotelPulseDemo.mp4` into the editor to upload it, (4) copy the generated `https://github.com/user-attachments/assets/...` Markdown snippet, (5) paste it in its own paragraph under this section and push. Inline playback is **not** claimed as verified until the published GitHub README is inspected and the video plays there.
+
+---
+
 ## Table of Contents
+
+0. [Project Demo](#-project-demo)
 
 1. [The Problem](#the-problem)
 2. [Why Star Ratings and Keyword Searches Fall Short](#why-star-ratings-and-keyword-searches-fall-short)
